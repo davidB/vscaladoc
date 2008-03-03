@@ -1,0 +1,87 @@
+/*@import "reset.css";*/
+
+body {
+    font-size:10pt;
+    font-family:sans-serif;
+}
+a {
+    text-decoration: none;
+}
+div.ctrl {
+    text-align:center;
+    /*
+    position: absolute;
+    top: 0;
+    left: 0;
+    */
+}
+select#packages {
+    width:100%;
+}
+#classes {
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.trait, .case, .object, .class {
+    padding-left: 20px;
+    background-repeat: no-repeat;
+    background-position: 0 ;
+}
+
+.trait {
+    color: #5C4AA0;
+    background-image: url(_images/trait.png);
+    font-style: italic;
+}
+
+.case {
+    color: #003FA7;
+    background-image: url(_images/case.png);
+}
+
+.class {
+    color: #33814B;
+    background-image: url(_images/class.png);
+}
+
+.object {
+    color: #892020;
+    background-image: url(_images/object.png);
+}
+#classTypeFilter * {
+    font-size: 75%;
+    font-weight: bold;
+    font-style: normal;
+}
+.off {
+    /* text-decoration: line-through;*/
+}
+/*
+#classes {
+margin: none;
+padding-left: 1em;
+list-style-type: square
+}
+*/
+#classes a:active, #classes a:hover {
+    color:#990000;
+    text-decoration:underline;
+}
+#classes a:link, #classes a:visited {
+    color:#000099;
+    font-family:sans-serif;
+    text-decoration:none;
+}
+
+h2 {
+    background-color:#EEEEEE;
+    border:1px solid #999999;
+    color:#990000;
+    font-family:sans-serif;
+    font-weight:bold;
+    padding:.3em;
+}
+
+

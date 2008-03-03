@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2007 scala-tools.org
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions
+  and limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.scala-tools</groupId>
+    <artifactId>scala-tools-parent</artifactId>
+    <version>1.2</version>
+  </parent>
+  <artifactId>vscaladoc</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>${project.artifactId}</name>
+  <inceptionYear>2008</inceptionYear>
+  <scm>
+    <connection>scm:svn:http://vscaladoc.googlecode.com/svn/trunk</connection>
+    <developerConnection>scm:svn:https://vscaladoc.googlecode.com/svn/trunk</developerConnection>
+    <url>http://code.google.com/p/vscaladoc/source/browse</url>
+  </scm>
+  <issueManagement>
+    <system>code.google</system>
+    <url>http://code.google.com/p/vscaladoc/issues/list</url>
+  </issueManagement>
+  <ciManagement>
+    <system>hudson</system>
+    <url>http://scala-tools.org/hudson/job/vscaladoc</url>
+  </ciManagement>
+
+  <properties>
+    <scala.version>2.7.0-rc3</scala.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>scala-tools.org</id>
+      <name>Scala-Tools Maven2 Repository</name>
+      <url>http://scala-tools.org/repo-releases</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>scala-tools.org</id>
+      <name>Scala-Tools Maven2 Repository</name>
+      <url>http://scala-tools.org/repo-releases</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>${scala.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-compiler</artifactId>
+      <version>${scala.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.scala-tools</groupId>
+        <artifactId>maven-scala-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <args>
+            <arg>-target:jvm-1.5</arg>
+          </args>
+          <scalaVersion>${scala.version}</scalaVersion>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>net.sf.alchim</groupId>
+        <artifactId>yuicompressor-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compress</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <nosuffix>true</nosuffix>
+          <aggregations>
+            <aggregation>
+              <!-- remove files after aggregation (default: false) -->
+              <removeIncluded>true</removeIncluded>
+              <!-- insert new line after each concatenation (default: false) -->
+              <insertNewLine>true</insertNewLine>
+              <output>${project.build.directory}/classes/org/scala_tools/vscaladoc/_highlighter/shAll.js</output>
+              <!-- files to include, path relative to output's directory or absolute path-->
+              <includes>
+                <include>shCore*.js</include>
+                <include>shBrush*.js</include>
+              </includes>
+            </aggregation>
+          </aggregations>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.scala-tools</groupId>
+        <artifactId>maven-scala-plugin</artifactId>
+        <!--
+        <configuration>
+          <scaladocClassName>org.scala_tools.vscaladoc.Main</scaladocClassName>
+          <scalaJars>
+            <scalaJar>
+              <groupId>org.scala-tools</groupId>
+              <artifactId>vscaladoc</artifactId>
+              <version>1.0-SNAPSHOT</version>
+            </scalaJar>
+          </scalaJars>
+        </configuration>
+        -->
+      </plugin>
+    </plugins>
+  </reporting>
+</project>

@@ -1,0 +1,45 @@
+scaladoc:
+---------
+
+TODO:
+* define/specify the pseudo-protocol "api:"
+  * allow to link object, class, type, package, method
+  * rules to convert "api:" to relative uri or absolute "http"
+* use js/jquery to show comments as full or partial
+* use js/jquery to create/convert link with pseudo-protocol api:
+* replace the ModelExtractor#... and usage of Symbols#Symbol and Types#Type by a clean read-only model (with case class)
+* support same option as standard scaladoc
+* support comments service (to code)
+* use a function to sort and group tags always in the same order (eg : @deprecated @param @return @throws+@exception @author @version @since @see ...)
+* use a PartialFunction to render tag or groupOfTag or a support for javadoc tags/taglet
+* copy from source directory, directories with the name "doc-files" (like javadoc)
+* provide an inheritance graph (like UmlGraph doclet or doxygen do) : graphviz, prefuse,...
+* provide (link ?)algebraic properties to definition of a method (name or symbol), scalacheck code/properties
+* link to test source code
+* in allClasses.html : add a filter by filename.startsWith
+* in allClasses.html : add a filter by filename.startsWith with CamelCase
+* in allClasses.html : sort by name, by fullname, by type
+* like with scaladoc, when several class with the same short name exists, display the last part of the package
+* There is no index, like Javadoc has
+* support comments in a wiki format (textile or markdown)
+* clean up/polish the code
+* provide tooltip for Type without link
+* support additionnal/overide remotePkg.properties
+* support override by dir
+* code : /**@bodyAsDoc*/ : In Scala I find myself writing quite a lot of one-line methods. Often the documentation comment is longer and less clear than the code, and it looks pretty silly when reading the source. It would be nice to have an annotation that just causes the source code of a particular member to be copied verbatim into the documentation.
+* provide outline for gotApi : http://www.gotapi.com/contribute/index.html
+* don't generate entry/doc for case class' companion (useless)
+* hide generated fields/methods (override of Product)
+* define a fields, val/var args of primary constructor and args of case class constructor
+* have an opportunity to use a ref to local copy of Java api dir [Andrew Gaydenko]
+* handle @see (create a link)
+
+DONE:
+* copy content of overview.html from source directory into the generated overview.html
+* copy content of package.html from source directory into the generated overview.html#xxx.xxxx
+* link to source code (use same syntax highlighter as scala-blogs.org)
+* links between companion object and class/trait
+* using checkbox for filter: [cl][x] [cc][x] [tr][x] [ob][x] Something like this. Where [x] is a html checkbox next to the type. Indicating which ones are shown. The current indicator with a different font type is hard to spot.
+* define as field : val, var, nested object, def (with no Args and a return value)
+* define as methods: every def except def classified as field or constructor
+
