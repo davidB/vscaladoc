@@ -4,6 +4,14 @@ body {
     font-size:10pt;
     font-family:sans-serif;
 }
+h2 {
+    background-color:#EEEEEE;
+    border:1px solid #999999;
+    color:#990000;
+    font-family:sans-serif;
+    font-weight:bold;
+    padding:.3em;
+}
 a {
     text-decoration: none;
 }
@@ -15,7 +23,7 @@ div.ctrl {
     left: 0;
     */
 }
-select#packages {
+select#packagesFilter, input#nameFilter {
     width:100%;
 }
 #classes {
@@ -50,21 +58,11 @@ select#packages {
     color: #892020;
     background-image: url(_images/object.png);
 }
-#classTypeFilter * {
+#kindFilters * {
     font-size: 75%;
     font-weight: bold;
     font-style: normal;
 }
-.off {
-    /* text-decoration: line-through;*/
-}
-/*
-#classes {
-margin: none;
-padding-left: 1em;
-list-style-type: square
-}
-*/
 #classes a:active, #classes a:hover {
     color:#990000;
     text-decoration:underline;
@@ -74,14 +72,4 @@ list-style-type: square
     font-family:sans-serif;
     text-decoration:none;
 }
-
-h2 {
-    background-color:#EEEEEE;
-    border:1px solid #999999;
-    color:#990000;
-    font-family:sans-serif;
-    font-weight:bold;
-    padding:.3em;
-}
-
 

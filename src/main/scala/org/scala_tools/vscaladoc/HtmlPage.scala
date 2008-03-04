@@ -133,8 +133,8 @@ class Page4Index(navFrame: HtmlPage, contentFrame: HtmlPage) extends HtmlPage {
   def uri = new URI("site:/index.html")
   override def body = Some(
     <frameset cols="250px, *">
-      <frame src={relativize(navFrame.uri)} name="navFrame"/>
-      <frame src={relativize(contentFrame.uri)} name="contentFrame"/>
+      <frame src={relativize(navFrame.uri)} name="navFrame" scrolling="yes"/>
+      <frame src={relativize(contentFrame.uri)} name="contentFrame" scrolling="yes"/>
     </frameset>
   )
 }
@@ -158,22 +158,24 @@ class Page4AllClasses(allPackages: Iterable[ModelExtractor#Package], allClasses:
     </xml:group>
   )
 
+  //TODO : bind onchange, onclick from js
   private def filtersBody: NodeSeq = {
 //          <a id="filterAll" href="#" onclick="showAll()" title="All">[A]</a>
 //          <a id="filterNode" href="#" onclick="hideAll()" title="None">[N]</a>
     <xml:group>
       <h2>Filters</h2>
       <div class="ctrl">
-        <select id="packages" multiple="true" size="6.5" onchange="filterPackages()">
+        <select id="packagesFilter" multiple="true" size="6.5">
           {allPackages.map(pkg => <option>{pkg.name}</option>)}
         </select>
-        <div id="classTypeFilter">
-          <a id="filter_class" class="class" href="#" onclick="filter('class')" title="Class">Class<input type="checkbox" checked="true" id="filter_class_cb"/></a>
-          <a id="filter_case" class="case" href="#" onclick="filter('case')" title="Case Class/Object">Case class/object<input type="checkbox" checked="true" id="filter_case_cb"/></a>
+        <div id="kindFilters">
+          <a id="filter_class" class="class" href="#" title="Class">Class<input type="checkbox" checked="true" id="filter_class_cb"/></a>
+          <a id="filter_case" class="case" href="#" title="Case Class/Object">Case class/object<input type="checkbox" checked="true" id="filter_case_cb"/></a>
           <br/>
-          <a id="filter_trait" class="trait" href="#" onclick="filter('trait')" title="Trait">Trait<input type="checkbox" checked="true" id="filter_trait_cb"/></a>
-          <a id="filter_object" class="object" href="#" onclick="filter('object')" title="Object">Object<input type="checkbox" checked="true" id="filter_object_cb"/></a>
+          <a id="filter_trait" class="trait" href="#" title="Trait">Trait<input type="checkbox" checked="true" id="filter_trait_cb"/></a>
+          <a id="filter_object" class="object" href="#" title="Object">Object<input type="checkbox" checked="true" id="filter_object_cb"/></a>
         </div>
+        <input id="nameFilter" type="text"/>
       </div>
     </xml:group>
   }

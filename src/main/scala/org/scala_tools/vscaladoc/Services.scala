@@ -33,10 +33,13 @@ object Services {
       var global: Global = _ //TODO: try to remove dependency to global
     }
 
+    /** @codeAsDoc */
     lazy val fileHelper = new FileHelper(cfg.sourcedir)
 
+    /** @codeAsDoc */
     lazy val linkHelper = new LinkHelper(cfg.outputdir, fileHelper, cfg.global)
 
+    /** @codeAsDoc */
     lazy val modelHelper = new ModelHelper()
 
     lazy val sourceHtmlizer : SourceHtmlizer = {
@@ -47,5 +50,6 @@ object Services {
       }
     }
 
+    /** @codeAsDoc */
     lazy val htmlRenderer = new HtmlRenderer(cfg.outputdir, fileHelper)
 }

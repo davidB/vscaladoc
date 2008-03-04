@@ -1,65 +1,97 @@
-var filterPackages = function(){
-  var selected = new Array();
-  $('select#packages').each(function(item) {
-      for (var i=0,a=0; i<this.options.length; i++) {
-        if (this.options[i].selected == true) {
-          selected[a] = this.options[i].value;
-          a++;
+var filter4Packages = [];
+var updateFilter4Packages = function(evt){
+    filter4Packages = [];
+    var select = this; //evt.target;
+    for (var i=0; i<select.options.length; i++) {
+        if (select.options[i].selected == true) {
+            filter4Packages.push(select.options[i].value);
         }
-      }
-  });
-  if (selected.length == 0) {
-    $("#classes li").addClass("packageSelected");
-  } else {
-    $("#classes li").each(function(index) {
-        var item = jQuery(this);
-        if (jQuery.inArray(item.attr("package"), selected) > -1) {
-          item.addClass("packageSelected");
-        } else {
-          item.removeClass("packageSelected");
-        }
-    });
-  }
-  updateClassesDisplay();
+    }
+    updateClassesDisplay();
+}
+var checkFilter4Packages = function(jqElem) {
+    if (filter4Packages.length < 1) {
+        return true;
+    }
+    var pkg = jqElem.attr('package');
+    return  (jQuery.inArray(pkg, filter4Packages) != -1);
 }
 
-var filter = function(selector) {
-  $("#classes ." + selector).toggleClass("classTypeSelected");
-  var btn = $("#filter_"+ selector);
-  btn.toggleClass("off");
-  $("#filter_"+ selector +"_cb").get(0).checked = !btn.hasClass("off");
-  updateClassesDisplay();
+var filter4Kind = [];
+var toggleFilter4Kind = function(evt) {
+    var kind = evt.data;
+    var index = jQuery.inArray(kind, filter4Kind);
+    if (index > -1) {
+        filter4Kind.splice(index,1);
+    } else {
+        filter4Kind.push(kind);
+    }
+    $("#filter_" + kind +"_cb").get(0).checked= (index < 0);
+    updateClassesDisplay();
 }
-var showAll = function() {
-  $("#classes li").addClass("classTypeSelected");
-  $("#classTypeFilter a[id^=filter_]").removeClass("off");
-  $("#classTypeFilter input[id^=filter_]").each(function(){this.checked = true});
-  updateClassesDisplay();
+var checkFilter4Kind = function(jqElem) {
+    var kind = jqElem.attr('class');
+    return (jQuery.inArray(kind, filter4Kind) != -1);
 }
-var hideAll = function() {
-  $("#classes li").removeClass("classTypeSelected");
-  $("#classTypeFilter a[id^=filter_]").addClass("off");
-  $("#classTypeFilter input[id^=filter_]").each(function(){this.checked = false});
-  updateClassesDisplay();
+
+var filter4Name = "";
+var updateFilter4Name = function(evt) {
+    filter4Name = this.value;
+    console.log(filter4Name);
+    updateClassesDisplay();
 }
+var checkFilter4Name = function(jqElem) {
+    if (filter4Name.length == 0)  {
+        return true;
+    }
+    var name = jqElem.children("a").text();
+    return (name.indexOf(filter4Name) == 0); //startsWith
+}
+
+
 var updateClassesDisplay = function() {
-  $("#classes li").hide();
-  $("#classes li").filter("li.packageSelected").filter("li.classTypeSelected").show();
+    $("#classes li").each(function() {
+            var jqElem = $(this);
+            //alert(jqElem + " "+ checkFilter4Packages(jqElem) + " " + checkFilter4Kind(jqElem));
+            if (checkFilter4Packages(jqElem) && checkFilter4Kind(jqElem) && checkFilter4Name(jqElem)) {
+                jqElem.show();
+            } else {
+                jqElem.hide();
+            }
+    });
 }
 $(document).ready(function(){
-  filterPackages();
-  showAll();
+        $("#packagesFilter")
+        .each(function() {
+                for (var i=0; i<this.options.length; i++) {
+                    this.options[i].selected = false;
+                }
+        })
+        .bind("change", updateFilter4Packages)
+        ;
+        $("#kindFilters a").each(function() {
+                var jqElem = $(this);
+                var kind = jqElem.attr("id").substring("filter_".length);
+                jqElem.bind("click", kind, toggleFilter4Kind);
+                filter4Kind.push(kind);
+                $("#filter_" + kind +"_cb").get(0).checked= true;
+        });
+        //$("#nameFilter").bind("keypress", function(){console.log("keypress")});
+        //$("#nameFilter").bind("keydown", function(){console.log("keydown")});
+        //$("#nameFilter").bind("keyup", function(){console.log("keyup")});
+        $("#nameFilter").val("");
+        $("#nameFilter").bind("keyup", updateFilter4Name);
 });
 
 /**
- * Selects an option by value
- *
- * @name     selectOptions
- * @author   Mathias Bank (http://www.mathias-bank.de)
- * @param    value specifies, which options should be selected
- * @example  jQuery("#myselect").selectOptions("val1");
- *
- */
+* Selects an option by value
+*
+* @name     selectOptions
+* @author   Mathias Bank (http://www.mathias-bank.de)
+* @param    value specifies, which options should be selected
+* @example  jQuery("#myselect").selectOptions("val1");
+*
+*/
 jQuery.fn.selectOptions = function(value) {
     this.each(
         function()	{
@@ -73,11 +105,11 @@ jQuery.fn.selectOptions = function(value) {
                 this.options[i].selected = (this.options[i].value == value);
             }
         }
-    )
+    );
     return this;
 }
 
 var selectPackage = function(name) {
     $("#packages").selectOptions(name);
-    filterPackages();
+    updateFilter4Packages();
 }
