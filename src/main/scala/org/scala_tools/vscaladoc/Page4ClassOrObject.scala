@@ -91,7 +91,7 @@ class Page4ClassOrObject(cls: ModelExtractor#ClassOrObject, allClasses: Iterable
     val line = cls.sym.pos.line
     Services.sourceHtmlizer.scalaToHtml(src.file)
       .flatMap(f => Services.linkHelper.uriFor(f))
-      .map(u => Text("Source :") ++ <a href={relativize(u)+"#"+line}>{Text(src.name + line.map("(" + _ +")").getOrElse(""))}</a>)
+      .map(u => Text("Source: ") ++ <a href={relativize(u)+"#"+line}>{Text(src.name + line.map("(" + _ +")").getOrElse(""))}</a>)
       .getOrElse(NodeSeq.Empty)
   }
 

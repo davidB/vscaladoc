@@ -32,8 +32,8 @@ select#packagesFilter, input#nameFilter {
     list-style: none;
 }
 
-.trait, .case, .object, .class {
-    padding-left: 20px;
+.trait, .object, .class {
+    padding-left: 17px;
     background-repeat: no-repeat;
     background-position: 0 ;
 }
@@ -42,11 +42,6 @@ select#packagesFilter, input#nameFilter {
     color: #5C4AA0;
     background-image: url(_images/trait.png);
     font-style: italic;
-}
-
-.case {
-    color: #003FA7;
-    background-image: url(_images/case.png);
 }
 
 .class {

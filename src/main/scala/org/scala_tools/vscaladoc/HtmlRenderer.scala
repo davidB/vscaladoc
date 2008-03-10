@@ -43,7 +43,6 @@ class HtmlRenderer(outputDir: File, fh: FileHelper) {
     copyResource("_highlighter/clipboard.swf")
     copyResource("_highlighter/shAll.js")
     copyResource("_highlighter/SyntaxHighlighter.css")
-    copyResource("_images/case.png")
     copyResource("_images/class.png")
     copyResource("_images/object.png")
     copyResource("_images/trait.png")

@@ -171,8 +171,6 @@ class Page4AllClasses(allPackages: Iterable[ModelExtractor#Package], allClasses:
         </select>
         <div id="kindFilters">
           <a id="filter_class" class="class" href="#" title="Class">Class<input type="checkbox" checked="true" id="filter_class_cb"/></a>
-          <a id="filter_case" class="case" href="#" title="Case Class/Object">Case class/object<input type="checkbox" checked="true" id="filter_case_cb"/></a>
-          <br/>
           <a id="filter_trait" class="trait" href="#" title="Trait">Trait<input type="checkbox" checked="true" id="filter_trait_cb"/></a>
           <a id="filter_object" class="object" href="#" title="Object">Object<input type="checkbox" checked="true" id="filter_object_cb"/></a>
         </div>
@@ -184,7 +182,7 @@ class Page4AllClasses(allPackages: Iterable[ModelExtractor#Package], allClasses:
   // <a href={urlFor(cls)} target={contentFrame} title={cls.fullName('.')}>{cls.name}</a>
   private def classesBody: NodeSeq = {
     val classes = allClasses.toList.sort(_.name.toLowerCase < _.name.toLowerCase)
-    def css(cls: ModelExtractor#ClassOrObject) = if (cls.flagsString.contains("case")) "case" else cls.kind
+    def css(cls: ModelExtractor#ClassOrObject) = cls.kind
     <xml:group>
       <h2>Classes</h2>
       <ul id="classes">
