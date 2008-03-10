@@ -1,10 +1,10 @@
 var filter4Packages = [];
 var updateFilter4Packages = function(evt){
     filter4Packages = [];
-    var select = this; //evt.target;
+    var select = $("#packagesFilter").get(0);//evt.target; //this
     for (var i=0; i<select.options.length; i++) {
         if (select.options[i].selected == true) {
-            filter4Packages.push(select.options[i].value);
+            filter4Packages.push(select.options[i].text);
         }
     }
     updateClassesDisplay();
@@ -18,6 +18,7 @@ var checkFilter4Packages = function(jqElem) {
 }
 
 var filter4Kind = [];
+var maxKind = 0;
 var toggleFilter4Kind = function(evt) {
     var kind = evt.data;
     var index = jQuery.inArray(kind, filter4Kind);
@@ -30,6 +31,9 @@ var toggleFilter4Kind = function(evt) {
     updateClassesDisplay();
 }
 var checkFilter4Kind = function(jqElem) {
+    if (filter4Kind.length == maxKind)  {
+        return true;
+    }
     var kind = jqElem.attr('class');
     return (jQuery.inArray(kind, filter4Kind) != -1);
 }
@@ -37,7 +41,6 @@ var checkFilter4Kind = function(jqElem) {
 var filter4Name = "";
 var updateFilter4Name = function(evt) {
     filter4Name = this.value;
-    console.log(filter4Name);
     updateClassesDisplay();
 }
 var checkFilter4Name = function(jqElem) {
@@ -75,6 +78,7 @@ $(document).ready(function(){
                 jqElem.bind("click", kind, toggleFilter4Kind);
                 filter4Kind.push(kind);
                 $("#filter_" + kind +"_cb").get(0).checked= true;
+                maxKind++;
         });
         //$("#nameFilter").bind("keypress", function(){console.log("keypress")});
         //$("#nameFilter").bind("keydown", function(){console.log("keydown")});
@@ -102,7 +106,7 @@ jQuery.fn.selectOptions = function(value) {
 
 
             for(var i = 0; i<optionsLength; i++) {
-                this.options[i].selected = (this.options[i].value == value);
+                this.options[i].selected = (this.options[i].text == value);
             }
         }
     );
@@ -110,6 +114,6 @@ jQuery.fn.selectOptions = function(value) {
 }
 
 var selectPackage = function(name) {
-    $("#packages").selectOptions(name);
+    $("#packagesFilter").selectOptions(name);
     updateFilter4Packages();
 }
