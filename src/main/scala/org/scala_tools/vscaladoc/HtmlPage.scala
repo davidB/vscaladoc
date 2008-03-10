@@ -56,11 +56,12 @@ trait HtmlPage {
     }
     def displayWithDetails(c: ModelExtractor#Comment) = {
       var detailsPos = c.body.indexOf('.')
+      if (c.body.startsWith("<p>")) detailsPos= c.body.indexOf("</p>") + 3
       if (detailsPos == -1) {
         detailsPos = c.body.length
       }
       val first = c.body.substring(0, detailsPos)
-      val details = if ((detailsPos+1) < c.body.length) c.body.substring(detailsPos+1) else ""
+      val details = if ((detailsPos+1) < c.body.length) c.body.substring(detailsPos+1).trim else ""
       <div class="apiComments">
         {Unparsed(first)}
         { if ((details.length > 0) || (c.attributes.filter(_.body.trim.length > 0).size > 0)) {
@@ -250,7 +251,7 @@ abstract class ContentPage extends HtmlPage{
     <xml:group>
       <a href={relativize("site:/index.html")} target="_top">FRAMES</a>
       &nbsp;&nbsp;
-      <a href="" target="_top">NO FRAMES</a>
+      <a href={val path=uri.getPath; path.substring(path.lastIndexOf('/')+1)} target="_top">NO FRAMES</a>
     </xml:group>
   }
   def navBarCell3 : NodeSeq = NodeSeq.Empty
