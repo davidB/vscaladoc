@@ -181,12 +181,28 @@ class Page4AllClasses(allPackages: Iterable[ModelExtractor#Package], allClasses:
 
   // <a href={urlFor(cls)} target={contentFrame} title={cls.fullName('.')}>{cls.name}</a>
   private def classesBody: NodeSeq = {
-    val classes = allClasses.toList.sort(_.name.toLowerCase < _.name.toLowerCase)
+    val namePlusMap = new scala.collection.mutable.HashMap[String, String]()
+    def compare(t1: ModelExtractor#ClassOrObject, t2: ModelExtractor#ClassOrObject) = {
+      if (t1.name.toLowerCase == t2.name.toLowerCase) {
+        val f1 = t1.fullName('.')
+        val f2 = t2.fullName('.')
+        if (f1 != f2) {
+          namePlusMap(f1) = f1.substring(0, f1.length-t1.name.length)
+          namePlusMap(f2) = f2.substring(0, f2.length-t2.name.length)
+          f1.toLowerCase < f2.toLowerCase
+        } else {
+          t1.kind < t2.kind
+        }
+      } else {
+        t1.name.toLowerCase < t2.name.toLowerCase
+      }
+    }
+    val classes = allClasses.toList.sort((t1, t2) => compare(t1,t2))
     def css(cls: ModelExtractor#ClassOrObject) = cls.kind
     <xml:group>
       <h2>Classes</h2>
       <ul id="classes">
-      {classes.map(cls => <li class={css(cls)} title={css(cls)} package={Services.modelHelper.packageFor(cls.sym).get.fullNameString('.')}>{Services.linkHelper.link(cls, this.uri, None, Some("contentFrame"))}</li>)}
+      {classes.map(cls => <li class={css(cls)} title={css(cls)} package={Services.modelHelper.packageFor(cls.sym).get.fullNameString('.')}>{Services.linkHelper.link(cls, this.uri, None, Some("contentFrame"))}{namePlusMap.get(cls.fullName('.')).map(" ("+_+")").getOrElse("")}</li>)}
       </ul>
     </xml:group>
   }
