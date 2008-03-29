@@ -180,8 +180,7 @@ class Page4ClassOrObject(cls: ModelExtractor#ClassOrObject, allClasses: Iterable
         Text((arg.flagsString + " " + arg.name).trim + " : ") ++ link(arg.resultType.get)
       )
     )
-    }
-    </code>
+    }</code>
   }
 
 

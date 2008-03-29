@@ -8,7 +8,8 @@ var updateFilter4Packages = function(evt){
         }
     }
     updateClassesDisplay();
-}
+};
+
 var checkFilter4Packages = function(jqElem) {
     if (filter4Packages.length < 1) {
         return true;
@@ -29,30 +30,38 @@ var toggleFilter4Kind = function(evt) {
     }
     $("#filter_" + kind +"_cb").get(0).checked= (index < 0);
     updateClassesDisplay();
-}
+};
+
 var checkFilter4Kind = function(jqElem) {
     if (filter4Kind.length == maxKind)  {
         return true;
     }
     var kind = jqElem.attr('class');
     return (jQuery.inArray(kind, filter4Kind) != -1);
-}
+};
 
 var filter4Name = "";
 var updateFilter4Name = function(evt) {
     filter4Name = this.value;
     updateClassesDisplay();
-}
+};
+
 var checkFilter4Name = function(jqElem) {
     if (filter4Name.length == 0)  {
         return true;
     }
     var name = jqElem.children("a").text();
     return (name.indexOf(filter4Name) == 0); //startsWith
-}
+};
 
-
+var lastUpdateClassDisplayCallId = null;
 var updateClassesDisplay = function() {
+    if (lastUpdateClassDisplayCallId != null) {
+        clearTimeout(lastUpdateClassDisplayCallId);
+    }
+    lastUpdateClassDisplayCallId = setTimeout("updateClassesDisplayNow()", 500);
+};
+var updateClassesDisplayNow = function() {
     $("#classes li").each(function() {
             var jqElem = $(this);
             //alert(jqElem + " "+ checkFilter4Packages(jqElem) + " " + checkFilter4Kind(jqElem));
@@ -62,7 +71,8 @@ var updateClassesDisplay = function() {
                 jqElem.hide();
             }
     });
-}
+};
+
 $(document).ready(function(){
         $("#packagesFilter")
         .each(function() {
