@@ -4,7 +4,7 @@ import scala.tools.nsc._
 
 import java.util.zip.ZipFile
 import java.io.File
-import java.net.URI
+import java.net.{URI, URL}
 
 import scala.collection.jcl
 import symtab.Flags._
@@ -19,7 +19,7 @@ import scala.io.Source
  */
 abstract class DocDriver extends ModelExtractor {
   /** comments for settings, settings is set/injected by Main (override)*/
-  def settings: Settings
+  def settings: doc.Settings
   /** comments for outdir */
   val outdir      = settings.outdir.value
   val sourcedir   = settings.sourcepath.value
@@ -85,6 +85,8 @@ abstract class DocDriver extends ModelExtractor {
       Services.cfg.outputdir = new File(settings.outdir.value)
       Services.cfg.global = global
 
+      loadPackageLinkDefs()
+
       //println("extract model")
       units.foreach(unit => f(null, unit.body))
       //println("render start")
@@ -92,12 +94,6 @@ abstract class DocDriver extends ModelExtractor {
       //println("nb of Packages: " + allPackages.size)
 
       allPackages.foreach(pkg => Services.linkHelper.addSitePackage(pkg.fullName('.')))
-      val in = this.getClass.getResource("/org/scala_tools/vscaladoc/remotePkg.properties")
-      //println("resource = " + in)
-      Source.fromURL(in).getLines.foreach{ l =>
-        val a = l.split("=")
-        Services.linkHelper.addRemotePackage(a(0), new URI(a.last.trim))
-      }
 
       Services.modelHelper.updateSubClasses(allClasses)
       Services.htmlRenderer.render(allPackages, allClasses)
@@ -107,4 +103,18 @@ abstract class DocDriver extends ModelExtractor {
     }
   }
 
+  def loadPackageLinkDefs() {
+    def loadFromURL(url: URL) {
+      Source.fromURL(url).getLines.foreach{ l =>
+        val a = l.split("=")
+        Services.linkHelper.addRemotePackage(a(0), new URI(a.last.trim))
+      }
+    }
+    loadFromURL(this.getClass.getResource("/org/scala_tools/vscaladoc/remotePkg.properties"))
+    val arg = System.getProperty("packageLinkDefs")
+    if (arg != null) {
+      loadFromURL(new URL(arg))
+    }
+    //println("resource = " + in)
+  }
 }

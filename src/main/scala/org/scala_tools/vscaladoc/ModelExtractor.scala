@@ -19,6 +19,7 @@ import compat.Platform.{EOL => LINE_SEPARATOR}
 trait ModelExtractor {
   val global: Global
   import global._
+  def settings: doc.Settings
 
   def assert(b: Boolean) {
     if (!b)
@@ -211,6 +212,7 @@ trait ModelExtractor {
 
   def isAccessible(sym: Symbol): Boolean = {
     import symtab.Flags._
+//    sym.isPublic || (sym hasFlag PROTECTED)
     settings.memberaccess.value match {
       case "private"   => sym.isPublic || (sym hasFlag PROTECTED) || (sym hasFlag PRIVATE)
       case "protected" => sym.isPublic || (sym hasFlag PROTECTED)
