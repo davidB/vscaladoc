@@ -6,13 +6,13 @@
     <version>1.3</version>
   </parent>
   <artifactId>vscaladoc</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <name>${project.artifactId}</name>
   <inceptionYear>2008</inceptionYear>
   <scm>
-    <connection>scm:svn:http://vscaladoc.googlecode.com/svn/tags/vscaladoc-1.0</connection>
-    <developerConnection>scm:svn:https://vscaladoc.googlecode.com/svn/tags/vscaladoc-1.0</developerConnection>
-    <url>http://code.google.com/p/vscaladoc/source/browse/tags/vscaladoc-1.0</url>
+    <connection>scm:svn:http://vscaladoc.googlecode.com/svn/tags/vscaladoc-1.1</connection>
+    <developerConnection>scm:svn:https://vscaladoc.googlecode.com/svn/tags/vscaladoc-1.1</developerConnection>
+    <url>http://code.google.com/p/vscaladoc/source/browse/tags/vscaladoc-1.1</url>
   </scm>
   <issueManagement>
     <system>code.google</system>
