@@ -112,9 +112,13 @@ abstract class DocDriver extends ModelExtractor {
 
   def loadPackageLinkDefs() {
     def loadFromURL(url: URL) {
-      Source.fromURL(url).getLines.foreach{ l =>
-        val a = l.split("=")
-        Services.linkHelper.addRemotePackage(a(0), new URI(a.last.trim))
+      try {
+        Source.fromURL(url).getLines.foreach{ l =>
+          val a = l.split("=")
+          Services.linkHelper.addRemotePackage(a(0), new URI(a.last.trim))
+        }
+      } catch {
+        case e : Exception => System.err.println("failed to load PackageLinkDefs(" + url +") :" + e.getMessage)
       }
     }
     loadFromURL(this.getClass.getResource("/org/scala_tools/vscaladoc/remotePkg.properties"))
