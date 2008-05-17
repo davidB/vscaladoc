@@ -70,12 +70,13 @@ object Main {
         } else if (command.settings.showPhases.value) {
           reporter.info(null, compiler.phaseDescriptions, true)
         } else {
-          val run = new compiler.Run
-          run compile command.files
           val generator = new DocDriver {
             lazy val global: compiler.type = compiler
             lazy val settings = docSettings
           }
+          generator.init()
+          val run = new compiler.Run
+          run compile command.files
           generator.process(run.units)
           reporter.printSummary()
         }

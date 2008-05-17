@@ -73,6 +73,7 @@ class FileHelper(val sourceDir: File) {
    * write string in file (encoding: UTF-8)
    */
   def writeTextToFile(f : File, txt : String, header: Option[String], footer: Option[String]) {
+    f.getParentFile.mkdirs()
     val out = new FileOutputStream(f)
     try {
       val enc = "UTF-8"

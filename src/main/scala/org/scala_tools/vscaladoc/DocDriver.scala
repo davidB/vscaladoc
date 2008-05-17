@@ -24,6 +24,17 @@ abstract class DocDriver extends ModelExtractor {
   val outdir      = settings.outdir.value
   val sourcedir   = settings.sourcepath.value
 
+  def init() {
+    val dir = new File(outdir)
+    if (dir.exists) {
+      if (dir.isFile) {
+        throw new IllegalArgumentException("dir " + dir + " is a File")
+      }
+      dir.delete()
+    }
+    dir.mkdirs()
+  }
+
   //import global._
 //  object additions extends jcl.LinkedHashSet[Symbol]
 //  object additions0 extends ModelAdditions(global) {

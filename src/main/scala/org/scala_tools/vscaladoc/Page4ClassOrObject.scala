@@ -175,7 +175,7 @@ class Page4ClassOrObject(cls: ModelExtractor#ClassOrObject, allClasses: Iterable
       Text((e.variance + " " + e.name).trim) ++ printIf(e.hi, " <: ", "") ++ printIf(e.lo, " >: ", "")
     ) ++
     printIf(entity.hi, " <: ", "") ++ printIf(entity.lo, " >: ", "") ++
-    entity.params.map(xs =>
+    entity.valueParams.map(xs =>
       DocUtil.NodeWrapper(xs.elements).mkXML("(", ", ", ")")(arg =>
         Text((arg.flagsString + " " + arg.name).trim + " : ") ++ link(arg.resultType.get)
       )

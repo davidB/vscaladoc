@@ -50,7 +50,7 @@ class ModelHelper {
   // correction: could do "case x :ModelExtractor#ClassOrObject#Val => ..." but keep isInstanceOf
   def isField(e: ModelExtractor#ClassOrObject#Member) = {
     (e.isInstanceOf[ModelExtractor#ClassOrObject#Val]) ||
-    ((e.isInstanceOf[ModelExtractor#ClassOrObject#Def]) && (e.params.length < 1) && (e.typeParams.length < 1) && (e.sym.defString.indexOf("(") == -1) && (e.resultType.map(_.toString).getOrElse("Unit") != "Unit") && !isConstructor(e)) ||
+    ((e.isInstanceOf[ModelExtractor#ClassOrObject#Def]) && (e.valueParams.length < 1) && (e.typeParams.length < 1) && (e.sym.defString.indexOf("(") == -1) && (e.resultType.map(_.toString).getOrElse("Unit") != "Unit") && !isConstructor(e)) ||
     (e.isInstanceOf[ModelExtractor#ClassOrObject#NestedObject])
   }
 
