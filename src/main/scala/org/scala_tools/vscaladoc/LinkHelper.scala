@@ -63,7 +63,7 @@ class LinkHelper(siteDir: File, fh: FileHelper, val global: Global) {
 
   def link(sym: Symbols#Symbol, from: URI, label:Option[String], target: Option[String]):NodeSeq = uriFor(sym) match {
     case Some(uri:URI) => <a href={relativize(uri, from).getOrElse("#")} title={sym.fullNameString('.')} target={target.getOrElse(null)}>{Text(label.getOrElse(sym.nameString))}</a>
-    case None => Text(label.getOrElse(sym.nameString))
+    case None => <a href="javascript:void" class="noref" title={sym.fullNameString('.')} >{Text(label.getOrElse(sym.nameString))}</a>
   }
 
   //TODO manage class, TopLevelObject, and member (def, object, val var) differently
