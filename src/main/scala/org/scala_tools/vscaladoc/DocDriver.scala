@@ -26,12 +26,8 @@ abstract class DocDriver extends ModelExtractor {
 
   def init() {
     val dir = new File(outdir)
-    if (dir.exists) {
-      if (dir.isFile) {
-        throw new IllegalArgumentException("dir " + dir + " is a File")
-      }
-      dir.delete()
-    }
+    System.out.println("delete :" + dir)
+    Services.fileHelper.deleteDirectory(dir)
     dir.mkdirs()
   }
 
@@ -124,7 +120,9 @@ abstract class DocDriver extends ModelExtractor {
     loadFromURL(this.getClass.getResource("/org/scala_tools/vscaladoc/remotePkg.properties"))
     val arg = System.getProperty("packageLinkDefs")
     if (arg != null) {
-      loadFromURL(new URL(arg))
+      val url = new URL(arg)
+      System.out.println("load packageLinkDefs from :" + url)
+      loadFromURL(url)
     }
     //println("resource = " + in)
   }
