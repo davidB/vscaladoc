@@ -87,7 +87,7 @@ class LinkHelper(siteDir: File, fh: FileHelper, val global: Global) {
   def uriFor(entity: ModelExtractor#Entity): Option[URI] = uriFor(entity.sym)
 
   def uriFor(file: File): Option[URI] = {
-    val path = fh.relativePathUnderDir(file, siteDir);
+    val path = fh.relativePathUnderDir(file, siteDir).replace('\\', '/')
     Some(new URI("site", path, null))
   }
 
