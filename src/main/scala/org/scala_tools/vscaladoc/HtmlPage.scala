@@ -175,7 +175,7 @@ class Page4AllClasses(allPackages: Iterable[ModelExtractor#Package], allClasses:
           <a id="filter_object" class="object" href="#" title="Object">Object<input type="checkbox" checked="true" id="filter_object_cb"/></a>
         </div>
         <input id="nameFilter" type="text"/><br/>
-        <a href="#" oclick="$(#userOptions).toggle()">Options</a><br/>
+        <a href="#" onclick="$('#userOptions').toggle()">Options</a><br/>
         <div id="userOptions" style="text-align:left">
           <a class="btnOption" href="#" onclick="togglefilter4NameOptions('filter4NameIgnoreCase')"><input type="checkbox" checked="false" class="option_filter4NameIgnoreCase_cb"/>Name filter ignore case</a><br/>
           <a class="btnOption" href="#" onclick="togglefilter4NameOptions('filter4NameAsRegExp')"><input type="checkbox" checked="false" class="option_filter4NameAsRegExp_cb"/>Name filter is reg. exp.</a><br/>
