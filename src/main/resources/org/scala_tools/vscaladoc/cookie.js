@@ -1,33 +1,3 @@
-var showInherited = true;
-
-var toggleInherited= function() {
-  showInherited = !showInherited;
-  $.cookie('showInherited', showInherited);
-  updateInherited();
-}
-
-var updateInherited = function() {
-  $("input.filter_inherited_cb").each(function(){this.checked = showInherited});
-  if (showInherited) {
-      $("tr.isInherited").show();
-  } else {
-      $("tr.isInherited").hide();
-  }
-}
-
-$(document).ready(function(){
-  parent.document.title=document.title;
-  showInherited = $.cookie('showInherited');
-  updateInherited();
-  $("div.apiCommentsDetails").hide();
-});
-
-var selectPackage = function(name) {
-    if(parent.navFrame) {
-        parent.navFrame.selectPackage(name);
-    }
-}
-
 /**
  * Cookie plugin
  *

@@ -1,3 +1,26 @@
+// manage user Options
+var cfg = {
+  filter4NameIgnoreCase : false,
+  filter4NameAsRegExp : false
+};
+
+var togglefilter4NameOptions = function(optionName) {
+  cfg[optionName] = !cfg[optionName];
+  $.cookie(optionName, cfg[optionName]);
+  $("input.option_" + optionName + "_cb").each(function(){this.checked = cfg[optionName]});
+  updateFilter4NameRE();
+};
+
+$(document).ready(function(){
+  for (optionName in cfg) {
+    cfg[optionName] = $.cookie(optionName);
+    cfg[optionName] = (cfg[optionName] == true || cfg[optionName] == "true");
+    $("input.option_" + optionName + "_cb").each(function(){this.checked = cfg[optionName]});
+  };
+});
+
+// Filter
+
 var filter4Packages = [];
 var updateFilter4Packages = function(evt){
     filter4Packages = [];
@@ -40,18 +63,30 @@ var checkFilter4Kind = function(jqElem) {
     return (jQuery.inArray(kind, filter4Kind) != -1);
 };
 
+var filter4NameRE = null;
 var filter4Name = "";
+
 var updateFilter4Name = function(evt) {
     filter4Name = this.value;
+    updateFilter4NameRE();
+}
+var updateFilter4NameRE = function() {
+    if ((filter4Name == null) || (filter4Name.length == 0)) {
+      filter4NameRE = null;
+    } else {
+      var flags = (cfg.filter4NameIgnoreCase) ? "i": "";
+      var pattern = (cfg.filter4NameAsRegExp) ? filter4Name : "^" + filter4Name;
+      filter4NameRE = new RegExp(pattern, flags);
+    }
     updateClassesDisplay();
 };
 
 var checkFilter4Name = function(jqElem) {
-    if (filter4Name.length == 0)  {
+    if (filter4NameRE == null)  {
         return true;
     }
     var name = jqElem.children("a").text();
-    return (name.indexOf(filter4Name) == 0); //startsWith
+    return filter4NameRE.test(name);
 };
 
 var lastUpdateClassDisplayCallId = null;
@@ -59,7 +94,7 @@ var updateClassesDisplay = function() {
     if (lastUpdateClassDisplayCallId != null) {
         clearTimeout(lastUpdateClassDisplayCallId);
     }
-    lastUpdateClassDisplayCallId = setTimeout("updateClassesDisplayNow()", 500);
+    lastUpdateClassDisplayCallId = setTimeout("updateClassesDisplayNow()", 300);
 };
 var updateClassesDisplayNow = function() {
     $("#classes li").each(function() {
@@ -121,9 +156,9 @@ jQuery.fn.selectOptions = function(value) {
         }
     );
     return this;
-}
+};
 
 var selectPackage = function(name) {
     $("#packagesFilter").selectOptions(name);
     updateFilter4Packages();
-}
+};
