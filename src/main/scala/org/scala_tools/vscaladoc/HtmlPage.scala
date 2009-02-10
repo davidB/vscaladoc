@@ -9,10 +9,37 @@ import java.net.{URI, URLEncoder}
 //import scala.compat.Platform.{EOL => LINE_SEPARATOR}
 import scala.xml.{NodeSeq, Text, Unparsed, Utility}
 
+
+object MarkupProcessor {
+  lazy val processor = try {
+    Services.cfg.format match {
+      case HtmlFormat => { s: String => s }
+      case MarkdownFormat =>
+        val klass = Class.forName("com.petebevin.markdown.MarkdownProcessor")
+        val processor = klass.newInstance
+        val method = klass.getMethod("markdown", classOf[String])
+        s: String => method.invoke(processor, s).asInstanceOf[String]
+      case TextileFormat =>
+        val klass = Class.forName("JTextile")
+        val method = klass.getMethod("textile", classOf[String])
+        s: String => method.invoke(null, s).asInstanceOf[String]
+      case _ => null
+    }
+  } catch {
+    case e: ClassNotFoundException =>
+      throw new FatalError("Class " + e.getMessage + " not found, but required by markup '" + Services.cfg.format + "'")
+  }
+
+  def apply(text: String) = processor(text)
+}
+
+
 /**
  * @author David Bernard
  */
 trait HtmlPage {
+  var markupProcessor: (String => String) = _
+
   /** to override */
   def uri: URI
   /** to override */
@@ -43,25 +70,25 @@ trait HtmlPage {
              NodeSeq.Empty
            }
          }
-          <dd><code>{attr.option}</code> - {Unparsed(attr.body)}</dd>
+          <dd><code>{attr.option}</code> - {Unparsed(MarkupProcessor(attr.body))}</dd>
           </xml:group>)
         }</dl>
       }
     }
-    def display(c: ModelExtractor#Comment) = {
+    def display(c: ModelExtractor#Comment, body: String) = {
       <div class="apiComments">
-        {Unparsed(c.body)}
+        {Unparsed(body)}
         {listAttributes(c)}
       </div>
     }
-    def displayWithDetails(c: ModelExtractor#Comment) = {
-      var detailsPos = c.body.indexOf('.')
-      if (c.body.startsWith("<p>")) detailsPos= c.body.indexOf("</p>") + 3
+    def displayWithDetails(c: ModelExtractor#Comment, body: String) = {
+      var detailsPos = body.indexOf('.')
+      if (body.startsWith("<p>")) detailsPos= body.indexOf("</p>") + 3
       if (detailsPos == -1) {
-        detailsPos = c.body.length
+        detailsPos = body.length
       }
-      val first = c.body.substring(0, detailsPos)
-      val details = if ((detailsPos+1) < c.body.length) c.body.substring(detailsPos+1).trim else ""
+      val first = body.substring(0, detailsPos)
+      val details = if ((detailsPos+1) < body.length) body.substring(detailsPos+1).trim else ""
       <div class="apiComments">
         {Unparsed(first)}
         { if ((details.length > 0) || (c.attributes.filter(_.body.trim.length > 0).size > 0)) {
@@ -80,12 +107,12 @@ trait HtmlPage {
     }
 
     comment match {
-      case Some(c: ModelExtractor#Comment) => {
+      case Some(c: ModelExtractor#Comment) =>
+        val body = MarkupProcessor(c.body)
         if (splitDetails) {
-          displayWithDetails(c)
+          displayWithDetails(c, body)
         } else {
-          display(c)
-        }
+          display(c, body)
       }
       case None => NodeSeq.Empty
     }
@@ -295,7 +322,10 @@ class Page4Overview(allPackages: Iterable[ModelExtractor#Package]) extends Conte
   /**
    * workaround because compiler doesn't read overview.html
    */
-  private def overviewComment: NodeSeq = <div>{Unparsed(Services.fileHelper.readTextFromSrcDir("overview.html").getOrElse(""))}</div>
+  private def overviewComment: NodeSeq =
+    <div>
+      {Unparsed(MarkupProcessor(Services.fileHelper.readTextFromSrcDir("overview.html").getOrElse("")))}
+    </div>
 
   private def packages = {
     <div>
@@ -308,7 +338,7 @@ class Page4Overview(allPackages: Iterable[ModelExtractor#Package]) extends Conte
               {htmlize(pkg.decodeComment)}
               { //workaround because compiler doesn't read package.html
                 val path = pkg.fullName('/') + "/package.html"
-                Unparsed(Services.fileHelper.readTextFromSrcDir(path).getOrElse(""))
+                Unparsed(MarkupProcessor(Services.fileHelper.readTextFromSrcDir(path).getOrElse("")))
               }
             </dd>
           </xml:group>)

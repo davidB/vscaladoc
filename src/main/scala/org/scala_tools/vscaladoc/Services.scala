@@ -4,6 +4,11 @@ import scala.xml.{NodeSeq, Text}
 import java.io.File
 import scala.tools.nsc.Global
 
+abstract class Format(name: String)
+case object HtmlFormat extends Format("html")
+case object MarkdownFormat extends Format("markdown")
+case object TextileFormat extends Format("textile")
+
 /**
  * Singleton services Factory/locator use to access other services and components.
  *
@@ -30,6 +35,7 @@ object Services {
       var sourcedir = new File(".")
       var outputdir = new File(".")
       var htmlizeSource = true
+      var format: Format = HtmlFormat
       var global: Global = _ //TODO: try to remove dependency to global
     }
 

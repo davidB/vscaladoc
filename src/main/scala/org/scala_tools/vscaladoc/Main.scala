@@ -16,6 +16,13 @@ import scala.tools.nsc.reporters.{Reporter, ConsoleReporter}
 import scala.tools.nsc.util.FakePos //{Position}
 
 
+// extra settings
+class VSettings(f: String => Unit) extends doc.Settings(f) {
+  val formatHtml = BooleanSetting("-format-html", "Process doc strings as raw HTML (default)")
+  val formatMarkdown = BooleanSetting("-format-markdown", "Process doc strings as markdown")
+  val formatTextile = BooleanSetting("-format-textile", "Process doc strings as textile")
+}
+
 /** The main class for scaladoc, a frontend for the Scala compiler
 * that generates documentation from source files.
 */
@@ -33,7 +40,7 @@ object Main {
   }
 
   def process(args: Array[String]) {
-    val docSettings : doc.Settings = new doc.Settings(error)
+    val docSettings = new VSettings(error)
     reporter = new ConsoleReporter(docSettings)
     val command = new CompilerCommand(List.fromArray(args), docSettings, error, false)
     if (command.settings.version.value)

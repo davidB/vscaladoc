@@ -19,7 +19,7 @@ import scala.io.Source
  */
 abstract class DocDriver extends ModelExtractor {
   /** comments for settings, settings is set/injected by Main (override)*/
-  def settings: doc.Settings
+  def settings: VSettings
   /** comments for outdir */
   val outdir      = settings.outdir.value
   val sourcedir   = settings.sourcepath.value
@@ -90,6 +90,13 @@ abstract class DocDriver extends ModelExtractor {
       Services.cfg.overviewTitle = DocUtil.load(settings.doctitle.value) //load
       Services.cfg.sourcedir = new File(settings.sourcepath.value)
       Services.cfg.outputdir = new File(settings.outdir.value)
+      Services.cfg.format = if (settings.formatMarkdown.value) {
+        MarkdownFormat
+      } else if (settings.formatTextile.value) {
+        TextileFormat
+      } else {
+        HtmlFormat
+      }
       Services.cfg.global = global
 
       loadPackageLinkDefs()
