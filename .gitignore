@@ -1,0 +1,10 @@
+.svn
+dist
+target
+build.log
+
+#ignore eclipse
+.settings
+.project
+.classpath
+.manager
