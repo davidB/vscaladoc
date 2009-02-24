@@ -125,7 +125,7 @@ trait HtmlPage {
       <title>{Text(title)}</title>
       <meta http-equiv="content-type" content={"text/html; charset=" + encoding}/>
       <meta name="generator" content={System.getProperty("doc.generator", "scaladoc (" + Services.cfg.versionString + ")")}/>
-      <script type="text/javascript" src={relativize("site:/jquery-1.2.3.js")}></script>
+      <script type="text/javascript" src={relativize("site:/jquery-1.3.2.js")}></script>
     </xml:group>
 
   def html =

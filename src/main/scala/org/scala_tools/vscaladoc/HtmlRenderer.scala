@@ -35,7 +35,7 @@ class HtmlRenderer(outputDir: File, fh: FileHelper) {
     val buf = new Array[Byte](1024)
     def copyResource(name: String) = fh.copyResource("org/scala_tools/vscaladoc/", name, outputDir, loader, buf)
     copyResource("reset.css")
-    copyResource("jquery-1.2.3.js")
+    copyResource("jquery-1.3.2.js")
     copyResource("all-classes.js")
     copyResource("all-classes.css")
     copyResource("content.js")
