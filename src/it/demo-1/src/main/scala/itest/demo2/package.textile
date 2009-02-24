@@ -1,0 +1,7 @@
+demo2 package description in textitle :
+* with same code
+
+<textarea name="code" class="scala" style="width:100%">
+  //sample code
+  var toto= "toto"
+</textarea>

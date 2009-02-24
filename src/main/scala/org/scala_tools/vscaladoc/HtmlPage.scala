@@ -135,6 +135,7 @@ trait HtmlPage {
       {header.getOrElse(NodeSeq.Empty)}
       </head>
       {body.getOrElse(NodeSeq.Empty)}
+
     </html>
 
   def save(rootDir: File) = {
@@ -180,10 +181,10 @@ class Page4AllClasses(allPackages: Iterable[ModelExtractor#Package], allClasses:
   )
 
   override def body = Some(
-    <xml:group>
+    <body>
       {filtersBody}
       {classesBody}
-    </xml:group>
+    </body>
   )
 
   //TODO : bind onchange, onclick from js
@@ -263,7 +264,7 @@ abstract class ContentPage extends HtmlPage{
   )
 
   def surroundBody(nodes: Option[NodeSeq]) = Some(
-    <xml:group>
+    <body>
       <div class="header">{Services.cfg.pageHeader}</div>
       <!-- ========= START OF TOP NAVBAR ======= -->
       <a name="navbar_top"><!-- --></a>
@@ -279,7 +280,7 @@ abstract class ContentPage extends HtmlPage{
         dp.SyntaxHighlighter.ClipboardSwf = '{relativize("site:/_highlighter/clipboard.swf")}';
         dp.SyntaxHighlighter.HighlightAll('code');
       </script>
-    </xml:group>
+    </body>
   )
 
   def navBar = {
@@ -323,12 +324,12 @@ class Page4Overview(allPackages: Iterable[ModelExtractor#Package]) extends Conte
    * workaround because compiler doesn't read overview.html
    */
   private def overviewComment: NodeSeq =
-    <div>
+    <div id="overview_desc">
       {Unparsed(MarkupProcessor(Services.fileHelper.readTextFromSrcDir("overview.html").getOrElse("")))}
     </div>
 
   private def packages = {
-    <div>
+    <div id="packages">
       <h2>Packages</h2>
       <dl>
         {allPackages.map(

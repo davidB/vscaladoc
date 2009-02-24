@@ -1,0 +1,6 @@
+root = new File(basedir, 'target/site/scaladocs')
+assert root.exists()
+assert root.isDirectory()
+assert new File(root, 'overview.html').exists()
+assert new File(root, 'index.html').exists()
+assert new File(root, 'all-classes.html').exists()

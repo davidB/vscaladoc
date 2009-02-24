@@ -1,4 +1,4 @@
-package org.scala_tools.vscaladoc.demo
+package itest.demo1
 
 trait DemoB {
   var variable = "Hello"
