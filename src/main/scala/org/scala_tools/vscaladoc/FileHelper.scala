@@ -60,8 +60,8 @@ class FileHelper(val sourceDir: File) {
   def findFileWithExt(baseFile : File, extensions : List[String]) :Option[(File, String)] = {
     val basePath = baseFile.getCanonicalPath
     extensions.
-      filter(ext => new File(basePath + "." + extensions).exists).
-      map(ext => (new File(basePath + "." + extensions), ext)).
+      map(ext => (new File(basePath + "." + ext), ext)).
+      filter(t => t._1.exists).
       firstOption
   }
 

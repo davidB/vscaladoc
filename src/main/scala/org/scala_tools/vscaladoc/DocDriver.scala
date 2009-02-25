@@ -25,8 +25,23 @@ abstract class DocDriver extends ModelExtractor {
   val sourcedir   = settings.sourcepath.value
 
   def init() {
+    Services.cfg.pageFooter =  DocUtil.load(settings.pagebottom.value)
+    Services.cfg.pageHeader =  DocUtil.load(settings.pagetop.value)
+    Services.cfg.windowTitle = settings.windowtitle.value
+    Services.cfg.overviewTitle = DocUtil.load(settings.doctitle.value) //load
+    Services.cfg.sourcedir = new File(settings.sourcepath.value)
+    Services.cfg.outputdir = new File(settings.outdir.value)
+    Services.cfg.format = if (settings.formatMarkdown.value) {
+      MarkdownFormat
+    } else if (settings.formatTextile.value) {
+      TextileFormat
+    } else {
+      HtmlFormat
+    }
+    Services.cfg.global = global
+
     val dir = new File(outdir)
-    System.out.println("delete :" + dir)
+    //System.out.println("delete :" + dir)
     Services.fileHelper.deleteDirectory(dir)
     dir.mkdirs()
   }
@@ -55,6 +70,7 @@ abstract class DocDriver extends ModelExtractor {
     assert(global.definitions != null)
     var allPackages : Set[Package] = Set.empty
     var allClasses : List[ClassOrObject] = Nil
+
     def g(pkg: Package, clazz: ClassOrObject) {
       if (isAccessible(clazz.sym)) {
         allClasses =  clazz :: allClasses
@@ -66,6 +82,7 @@ abstract class DocDriver extends ModelExtractor {
         }
       }
     }
+
     def f(pkg: Package, tree: global.Tree) {
       if (tree != global.EmptyTree && tree.hasSymbol) {
         val sym = tree.symbol
@@ -84,21 +101,6 @@ abstract class DocDriver extends ModelExtractor {
       }
     }
     try {
-      Services.cfg.pageFooter =  DocUtil.load(settings.pagebottom.value)
-      Services.cfg.pageHeader =  DocUtil.load(settings.pagetop.value)
-      Services.cfg.windowTitle = settings.windowtitle.value
-      Services.cfg.overviewTitle = DocUtil.load(settings.doctitle.value) //load
-      Services.cfg.sourcedir = new File(settings.sourcepath.value)
-      Services.cfg.outputdir = new File(settings.outdir.value)
-      Services.cfg.format = if (settings.formatMarkdown.value) {
-        MarkdownFormat
-      } else if (settings.formatTextile.value) {
-        TextileFormat
-      } else {
-        HtmlFormat
-      }
-      Services.cfg.global = global
-
       loadPackageLinkDefs()
 
       //println("extract model")
@@ -108,7 +110,6 @@ abstract class DocDriver extends ModelExtractor {
       //println("nb of Packages: " + allPackages.size)
 
       allPackages.foreach(pkg => Services.linkHelper.addSitePackage(pkg.fullName('.')))
-
       Services.modelHelper.updateSubClasses(allClasses)
       Services.htmlRenderer.render(allPackages, allClasses)
       //println("render end")

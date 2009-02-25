@@ -53,6 +53,7 @@ class Htmlizer4Markup(defaultFormat: Format, fileHelper : FileHelper) {
       case "md" | "markdown" => format2method(MarkdownFormat)(txt)
       case "textile" => format2method(TextileFormat)(txt)
       case "html" => format2method(HtmlFormat)(txt)
+      case "txt" => default2html(txt)
       case _ => txt
     }
   }
