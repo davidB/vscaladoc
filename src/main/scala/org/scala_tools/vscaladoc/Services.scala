@@ -4,10 +4,6 @@ import scala.xml.{NodeSeq, Text}
 import java.io.File
 import scala.tools.nsc.Global
 
-abstract class Format(name: String)
-case object HtmlFormat extends Format("html")
-case object MarkdownFormat extends Format("markdown")
-case object TextileFormat extends Format("textile")
 
 /**
  * Singleton services Factory/locator use to access other services and components.
@@ -48,14 +44,20 @@ object Services {
     /** @codeAsDoc */
     lazy val modelHelper = new ModelHelper()
 
-    lazy val sourceHtmlizer : SourceHtmlizer = {
+    lazy val htmlizer4Source : Htmlizer4Source = {
       if (cfg.htmlizeSource) {
-        new SourceHtmlizerOn(cfg.sourcedir, cfg.outputdir, fileHelper, linkHelper)
+        new Htmlizer4SourceOn(cfg.sourcedir, cfg.outputdir, fileHelper, linkHelper)
       } else {
-        new SourceHtmlizerOff()
+        new Htmlizer4SourceOff()
       }
     }
 
     /** @codeAsDoc */
-    lazy val htmlRenderer = new HtmlRenderer(cfg.outputdir, fileHelper)
+    lazy val htmlRenderer = new HtmlRenderer(cfg.outputdir, htmlPageHelper, fileHelper)
+
+    /** @codeAsDoc */
+    lazy val htmlPageHelper = new HtmlPageHelper(linkHelper, htmlizer4Markup, htmlizer4Source, modelHelper)
+
+    /** @codeAsDoc */
+    lazy val htmlizer4Markup = new Htmlizer4Markup(cfg.format, fileHelper)
 }

@@ -5,11 +5,11 @@ import scala.xml.{NodeSeq, Text}
 import scala.tools.nsc.symtab.Symbols
 import scala.tools.nsc.symtab.Types
 
-class Page4ClassOrObject(cls: ModelExtractor#ClassOrObject, allClasses: Iterable[ModelExtractor#ClassOrObject]) extends ContentPage {
+class Page4ClassOrObject(env : HtmlPageHelper, cls: ModelExtractor#ClassOrObject, allClasses: Iterable[ModelExtractor#ClassOrObject]) extends ContentPage(env) {
   case class Member(entity: ModelExtractor#Entity, inheritedFrom:Option[Symbols#Symbol]);
 
-  def uri = Services.linkHelper.uriFor(cls).getOrElse(null)
-  def link(tpe: Types#Type) = Services.linkHelper.link(uri)(tpe)
+  def uri = env.linkHelper.uriFor(cls).getOrElse(null)
+  def link(tpe: Types#Type) = env.linkHelper.link(uri)(tpe)
 
   override def title = super.title + " : " + cls.fullName('.')
 
@@ -26,16 +26,16 @@ class Page4ClassOrObject(cls: ModelExtractor#ClassOrObject, allClasses: Iterable
       {signatureFor(cls)}
       {extendsFor(cls)}
       <br/>
-      {htmlize(cls.decodeComment, false)}
+      {env.htmlize(cls.decodeComment, false)}
       <br/>
       {linkToCompanion}
       {linkToSource}
       </div>
       {directKnownSubclasses}
       {nestedClasses}
-      {section("Constructors", Services.modelHelper.isConstructor, asXmlConstructor)}
-      {section("Fields", Services.modelHelper.isField, asXmlField)}
-      {section("Methods", Services.modelHelper.isMethod, asXmlField)}
+      {section("Constructors", env.modelHelper.isConstructor, asXmlConstructor)}
+      {section("Fields", env.modelHelper.isField, asXmlField)}
+      {section("Methods", env.modelHelper.isMethod, asXmlField)}
       <!-- ========= END OF CLASS DATA ========= -->
     </xml:group>
   ))
@@ -53,25 +53,25 @@ class Page4ClassOrObject(cls: ModelExtractor#ClassOrObject, allClasses: Iterable
 
   //TODO: to implement Direct Know Subclasses
   def directKnownSubclasses : NodeSeq = {
-    val subClasses = Services.modelHelper.findSubClassesOf(cls)
+    val subClasses = env.modelHelper.findSubClassesOf(cls)
     if (!subClasses.isEmpty) {
       <xml:group>
         <h3>Direct Known Subclasses</h3>
-        {subClasses.map(m => Services.linkHelper.link(m, uri, None, None) ++ Text(", "))}
+        {subClasses.map(m => env.linkHelper.link(m, uri, None, None) ++ Text(", "))}
       </xml:group>
     } else {
       NodeSeq.Empty
     }
   }
 
-  //def inheritanceGraph : NodeSeq = Text(Services.modelHelper.inheritanceGraphOf(cls))
+  //def inheritanceGraph : NodeSeq = Text(env.modelHelper.inheritanceGraphOf(cls))
 
   def nestedClasses : NodeSeq = {
-    val nclasses = findMembers(Services.modelHelper.isNestedClass, true)
+    val nclasses = findMembers(env.modelHelper.isNestedClass, true)
     if (nclasses.length > 0) {
       <xml:group>
         <h3>Nested Classes</h3>
-        {nclasses.map(m => Services.linkHelper.link(m.entity, uri, None, None) ++ Text(", "))}
+        {nclasses.map(m => env.linkHelper.link(m.entity, uri, None, None) ++ Text(", "))}
       </xml:group>
     } else {
       NodeSeq.Empty
@@ -81,16 +81,16 @@ class Page4ClassOrObject(cls: ModelExtractor#ClassOrObject, allClasses: Iterable
   def linkToCompanion : NodeSeq = {
     val src = cls.sym.sourceFile
     val line = cls.sym.pos.line
-    Services.modelHelper.findCompanionOf(cls, allClasses)
-      .map(u => Text("Companion: ") ++ Services.linkHelper.link(u, uri, None, None) ++ <br/>)
+    env.modelHelper.findCompanionOf(cls, allClasses)
+      .map(u => Text("Companion: ") ++ env.linkHelper.link(u, uri, None, None) ++ <br/>)
       .getOrElse(NodeSeq.Empty)
   }
 
   def linkToSource : NodeSeq = {
     val src = cls.sym.sourceFile
     val line = cls.sym.pos.line
-    Services.sourceHtmlizer.scalaToHtml(src.file)
-      .flatMap(f => Services.linkHelper.uriFor(f))
+    env.sourceHtmlizer.scalaToHtml(src.file)
+      .flatMap(f => env.linkHelper.uriFor(f))
       .map(u => Text("Source: ") ++ <a href={relativize(u)+"#"+line}>{Text(src.name + line.map("(" + _ +")").getOrElse(""))}</a>)
       .getOrElse(NodeSeq.Empty)
   }
@@ -129,7 +129,7 @@ class Page4ClassOrObject(cls: ModelExtractor#ClassOrObject, allClasses: Iterable
     <tr class={member.inheritedFrom.map(v => "isInherited").getOrElse("") + (if (entity.sym.isDeprecated) " isDeprecated" else "")}>
       <td class="signature">
         {signatureFor(entity)}
-        {htmlize(entity.decodeComment)}
+        {env.htmlize(entity.decodeComment)}
       </td>
     </tr>
   }
@@ -148,12 +148,12 @@ class Page4ClassOrObject(cls: ModelExtractor#ClassOrObject, allClasses: Iterable
       <td class="signature">
         {signatureFor(entity)}
         {codeAsDoc(entity)}
-        {htmlize(entity.decodeComment)}
+        {env.htmlize(entity.decodeComment)}
       </td>
       <td class="type">{entity.resultType.map(link(_)).getOrElse(NodeSeq.Empty)}{extendsFor(entity)}</td>
       <td class="remarks">
         {/** TODO add override from */}
-        {member.inheritedFrom.map(Services.linkHelper.link(_, uri, None, None)).getOrElse(NodeSeq.Empty)}
+        {member.inheritedFrom.map(env.linkHelper.link(_, uri, None, None)).getOrElse(NodeSeq.Empty)}
       </td>
     </tr>
   }
@@ -187,7 +187,7 @@ class Page4ClassOrObject(cls: ModelExtractor#ClassOrObject, allClasses: Iterable
   override def navBarCell1 = {
     <xml:group>
       <a href={relativize("site:/overview.html")}>OVERVIEW</a>&nbsp;|&nbsp;
-      {Services.modelHelper.packageFor(cls.sym).map(Services.linkHelper.link(_, uri, Some("PACKAGE"), None) ++ Text(" | ")).getOrElse(NodeSeq.Empty)}
+      {env.modelHelper.packageFor(cls.sym).map(env.linkHelper.link(_, uri, Some("PACKAGE"), None) ++ Text(" | ")).getOrElse(NodeSeq.Empty)}
       <a href="#Constructors">CONSTR</a>&nbsp;|&nbsp;
       <a href="#Fields">FIELDS</a>&nbsp;|&nbsp;
       <a href="#Methods">METHODS</a>

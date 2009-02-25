@@ -6,11 +6,11 @@ import java.net.URI
 /**
  * @author David Bernard
  */
-trait SourceHtmlizer {
+trait Htmlizer4Source {
   def scalaToHtml(src :File) : Option[File]
 }
 
-class SourceHtmlizerOn (val inDir: File, val outDir: File, val fh: FileHelper, val lh: LinkHelper) extends SourceHtmlizer {
+class Htmlizer4SourceOn (val inDir: File, val outDir: File, val fh: FileHelper, val lh: LinkHelper) extends Htmlizer4Source {
   private def relativize(uri: URI, from: URI) = lh.relativize(uri, from).getOrElse("__notFound__" + uri.getPath)
 
   def header(dest: URI) = Some("""
@@ -59,7 +59,7 @@ class SourceHtmlizerOn (val inDir: File, val outDir: File, val fh: FileHelper, v
   copyResources()
 }
 
-class SourceHtmlizerOff extends SourceHtmlizer {
+class Htmlizer4SourceOff extends Htmlizer4Source {
   def scalaToHtml(src :File) = None
 }
 

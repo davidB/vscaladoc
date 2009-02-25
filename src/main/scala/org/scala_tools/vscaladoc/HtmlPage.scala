@@ -10,121 +10,26 @@ import java.net.{URI, URLEncoder}
 import scala.xml.{NodeSeq, Text, Unparsed, Utility}
 
 
-object MarkupProcessor {
-  lazy val processor = try {
-    Services.cfg.format match {
-      case HtmlFormat => { s: String => s }
-      case MarkdownFormat =>
-        val klass = Class.forName("com.petebevin.markdown.MarkdownProcessor")
-        val processor = klass.newInstance
-        val method = klass.getMethod("markdown", classOf[String])
-        s: String => method.invoke(processor, s).asInstanceOf[String]
-      case TextileFormat =>
-        val klass = Class.forName("JTextile")
-        val method = klass.getMethod("textile", classOf[String])
-        s: String => method.invoke(null, s).asInstanceOf[String]
-      case _ => null
-    }
-  } catch {
-    case e: ClassNotFoundException =>
-      throw new FatalError("Class " + e.getMessage + " not found, but required by markup '" + Services.cfg.format + "'")
-  }
-
-  def apply(text: String) = processor(text)
-}
-
-
-/**
- * @author David Bernard
- */
-trait HtmlPage {
-  var markupProcessor: (String => String) = _
-
+abstract
+class HtmlPage(env : HtmlPageHelper) {
   /** to override */
   def uri: URI
   /** to override */
-  def title: String = Services.cfg.windowTitle
+  def title: String = env.windowTitle
   /** to override */
   def header: Option[NodeSeq] = None
   /** to override */
   def body: Option[NodeSeq] = None
 
-  def relativize(that: URI) : String = Services.linkHelper.relativize(that, this.uri).getOrElse("#")
+  def relativize(that: URI) : String = env.linkHelper.relativize(that, this.uri).getOrElse("#")
   def relativize(that: String) : String = relativize(new URI(that))
 
-  def htmlize(comment: Option[ModelExtractor#Comment]) : NodeSeq = htmlize(comment, true)
-
-  //TODO group attr.tag with same value
-  def htmlize(comment: Option[ModelExtractor#Comment], splitDetails: Boolean) : NodeSeq = {
-    def listAttributes(c: ModelExtractor#Comment) = {
-      if (c.attributes.filter(_.body.trim.length > 0).isEmpty) {
-        NodeSeq.Empty
-      } else {
-       var last = ""
-       <dl>{c.attributes.sort(_.tag < _.tag).filter(_.body.trim.length > 0).map(attr => <xml:group>
-         {
-           if (last != attr.tag) {
-             last = attr.tag
-             <dt>{attr.tag}</dt>
-           } else {
-             NodeSeq.Empty
-           }
-         }
-          <dd><code>{attr.option}</code> - {Unparsed(MarkupProcessor(attr.body))}</dd>
-          </xml:group>)
-        }</dl>
-      }
-    }
-    def display(c: ModelExtractor#Comment, body: String) = {
-      <div class="apiComments">
-        {Unparsed(body)}
-        {listAttributes(c)}
-      </div>
-    }
-    def displayWithDetails(c: ModelExtractor#Comment, body: String) = {
-      var detailsPos = body.indexOf('.')
-      if (body.startsWith("<p>")) detailsPos= body.indexOf("</p>") + 3
-      if (detailsPos == -1) {
-        detailsPos = body.length
-      }
-      val first = body.substring(0, detailsPos)
-      val details = if ((detailsPos+1) < body.length) body.substring(detailsPos+1).trim else ""
-      <div class="apiComments">
-        {Unparsed(first)}
-        { if ((details.length > 0) || (c.attributes.filter(_.body.trim.length > 0).size > 0)) {
-            <xml:group>
-              <a href="javascript://" onclick="jQuery(this).next().toggle()" class="detailsBtn">[details]</a>
-              <div class="apiCommentsDetails">
-                {Unparsed(details)}
-                {listAttributes(c)}
-              </div>
-            </xml:group>
-          } else {
-            NodeSeq.Empty
-          }
-        }
-      </div>
-    }
-
-    comment match {
-      case Some(c: ModelExtractor#Comment) =>
-        val body = MarkupProcessor(c.body)
-        if (splitDetails) {
-          displayWithDetails(c, body)
-        } else {
-          display(c, body)
-      }
-      case None => NodeSeq.Empty
-    }
-  }
-
   val dtype = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"
-  val encoding = Services.cfg.encodingString
   val header0 =
     <xml:group>
       <title>{Text(title)}</title>
-      <meta http-equiv="content-type" content={"text/html; charset=" + encoding}/>
-      <meta name="generator" content={System.getProperty("doc.generator", "scaladoc (" + Services.cfg.versionString + ")")}/>
+      <meta http-equiv="content-type" content={"text/html; charset=" + env.encodingString}/>
+      <meta name="generator" content={System.getProperty("doc.generator", "scaladoc (" + env.versionString + ")")}/>
       <script type="text/javascript" src={relativize("site:/jquery-1.3.2.js")}></script>
     </xml:group>
 
@@ -135,31 +40,17 @@ trait HtmlPage {
       {header.getOrElse(NodeSeq.Empty)}
       </head>
       {body.getOrElse(NodeSeq.Empty)}
-
     </html>
 
-  def save(rootDir: File) = {
-    val file = new File(rootDir, uri.getPath.substring(1))
-    val parent = file.getParentFile()
-    if (!parent.exists()) parent.mkdirs()
-    val writer = new FileWriter(file)
-    try {
-      writer.write(dtype)
-      writer.append(scala.compat.Platform.EOL)
-      writer.append(html.toString())
-    } finally {
-      writer.close()
-    }
-  }
 }
 
-class Page4Blank(filename: String) extends HtmlPage {
+class Page4Blank(env : HtmlPageHelper, filename: String) extends HtmlPage(env) {
   def uri = new URI("site:" + filename)
   override def body = Some(<body/>)
 }
 
-class Page4Index(navFrame: HtmlPage, contentFrame: HtmlPage) extends HtmlPage {
-  def uri = new URI("site:/index.html")
+class Page4Index(env : HtmlPageHelper, navFrame: HtmlPage, contentFrame: HtmlPage) extends HtmlPage(env) {
+  val uri = new URI("site:/index.html")
   override def body = Some(
     <frameset cols="250px, *">
       <frame src={relativize(navFrame.uri)} name="navFrame" scrolling="yes"/>
@@ -169,8 +60,8 @@ class Page4Index(navFrame: HtmlPage, contentFrame: HtmlPage) extends HtmlPage {
 }
 
 
-class Page4AllClasses(allPackages: Iterable[ModelExtractor#Package], allClasses: Iterable[ModelExtractor#ClassOrObject]) extends HtmlPage {
-  def uri = new URI("site:/all-classes.html")
+class Page4AllClasses(env : HtmlPageHelper, allPackages: Iterable[ModelExtractor#Package], allClasses: Iterable[ModelExtractor#ClassOrObject]) extends HtmlPage(env) {
+  val uri = new URI("site:/all-classes.html")
   override def title = "List of all classes and objects"
 
   override def header = Some(
@@ -235,7 +126,7 @@ class Page4AllClasses(allPackages: Iterable[ModelExtractor#Package], allClasses:
     <xml:group>
       <h2>Classes</h2>
       <ul id="classes">
-      {classes.map(cls => <li class={css(cls)} title={css(cls)} package={Services.modelHelper.packageFor(cls.sym).get.fullNameString('.')}>{Services.linkHelper.link(cls, this.uri, None, Some("contentFrame"))}{namePlusMap.get(cls.fullName('.')).map(" ("+_+")").getOrElse("")}</li>)}
+      {classes.map(cls => <li class={css(cls)} title={css(cls)} package={env.modelHelper.packageFor(cls.sym).get.fullNameString('.')}>{env.linkHelper.link(cls, this.uri, None, Some("contentFrame"))}{namePlusMap.get(cls.fullName('.')).map(" ("+_+")").getOrElse("")}</li>)}
       </ul>
     </xml:group>
   }
@@ -252,7 +143,7 @@ class Page4AllClasses(allPackages: Iterable[ModelExtractor#Package], allClasses:
       <script id="shBrushSql.js" src={relativize("site:/_highlighter/shBrushSql.js")} language='javascript' ></script>
       <script id="shBrushXml.js" src={relativize("site:/_highlighter/shBrushXml.js")} language='javascript' ></script>
 */
-abstract class ContentPage extends HtmlPage{
+abstract class ContentPage(env : HtmlPageHelper) extends HtmlPage(env){
    def surroundHeader(nodes: Option[NodeSeq]) = Some(
     <xml:group>
       <link rel="stylesheet" href={relativize("site:/content.css")} type="text/css"/>
@@ -265,7 +156,7 @@ abstract class ContentPage extends HtmlPage{
 
   def surroundBody(nodes: Option[NodeSeq]) = Some(
     <body>
-      <div class="header">{Services.cfg.pageHeader}</div>
+      <div class="header">{env.pageHeader}</div>
       <!-- ========= START OF TOP NAVBAR ======= -->
       <a name="navbar_top"><!-- --></a>
       {navBar}
@@ -275,7 +166,7 @@ abstract class ContentPage extends HtmlPage{
       <a name="navbar_bottom"><!-- --></a>
       {navBar}
       <!-- ======== END OF BOTTOM NAVBAR ======= -->
-      {Services.cfg.pageFooter}
+      {env.pageFooter}
       <script language='javascript'>
         dp.SyntaxHighlighter.ClipboardSwf = '{relativize("site:/_highlighter/clipboard.swf")}';
         dp.SyntaxHighlighter.HighlightAll('code');
@@ -306,8 +197,8 @@ abstract class ContentPage extends HtmlPage{
 
 }
 
-class Page4Overview(allPackages: Iterable[ModelExtractor#Package]) extends ContentPage {
-  def uri = new URI("site:/overview.html")
+class Page4Overview(env : HtmlPageHelper, allPackages: Iterable[ModelExtractor#Package]) extends ContentPage(env) {
+  val uri = new URI("site:/overview.html")
   override def title = super.title + " : Overview"
   override def header = surroundHeader(None)
   override def body = surroundBody(Some(
@@ -318,14 +209,14 @@ class Page4Overview(allPackages: Iterable[ModelExtractor#Package]) extends Conte
     </xml:group>
   ))
 
-  private def pageTitle: NodeSeq = {<h1>{Services.cfg.overviewTitle}</h1>}
+  private def pageTitle: NodeSeq = {<h1>{env.overviewTitle}</h1>}
 
   /**
    * workaround because compiler doesn't read overview.html
    */
   private def overviewComment: NodeSeq =
     <div id="overview_desc">
-      {Unparsed(MarkupProcessor(Services.fileHelper.readTextFromSrcDir("overview.html").getOrElse("")))}
+      {Unparsed(env.markupProcessor.onFile("overview").getOrElse(""))}
     </div>
 
   private def packages = {
@@ -336,10 +227,9 @@ class Page4Overview(allPackages: Iterable[ModelExtractor#Package]) extends Conte
           pkg => <xml:group>
             <dt><a href={"javascript:selectPackage('" +pkg.name + "')"}>{pkg.name}</a></dt>
             <dd>
-              {htmlize(pkg.decodeComment)}
+              {env.htmlize(pkg.decodeComment)}
               { //workaround because compiler doesn't read package.html
-                val path = pkg.fullName('/') + "/package.html"
-                Unparsed(MarkupProcessor(Services.fileHelper.readTextFromSrcDir(path).getOrElse("")))
+                Unparsed(env.markupProcessor.onFile(pkg.fullName('/') + "/package").getOrElse(""))
               }
             </dd>
           </xml:group>)

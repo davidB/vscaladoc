@@ -57,9 +57,15 @@ class FileHelper(val sourceDir: File) {
     }
   }
 
-  def readTextFromSrcDir(subPath: String) :Option[String] = {
-    readTextFromFile(new File(sourceDir, subPath))
+  def findFileWithExt(baseFile : File, extensions : List[String]) :Option[(File, String)] = {
+    val basePath = baseFile.getCanonicalPath
+    extensions.
+      filter(ext => new File(basePath + "." + extensions).exists).
+      map(ext => (new File(basePath + "." + extensions), ext)).
+      firstOption
   }
+
+  def findFileWithExt(baseSubPath : String, extensions : List[String]) :Option[(File, String)] = findFileWithExt(new File(sourceDir, baseSubPath), extensions)
 
   def readTextFromFile(f : File) :Option[String] = {
     if (f.exists) {
@@ -67,6 +73,10 @@ class FileHelper(val sourceDir: File) {
     } else {
       None
     }
+  }
+
+  def readTextFromSrcDir(subPath: String) :Option[String] = {
+    readTextFromFile(new File(sourceDir, subPath))
   }
 
   /**
