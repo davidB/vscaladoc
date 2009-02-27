@@ -1,0 +1,65 @@
+
+  <html>
+  <head>
+    <link href='./../../_highlighter/SyntaxHighlighter.css' rel='stylesheet' type='text/css'/>
+    <script language='javascript' src='./../../_highlighter/shAll.js'></script>
+  </head>
+  <body>
+    <pre name="code" class="scala" style="width:100%">
+package itest.demo1
+
+/**
+ * Class to test class name with special character
+ */
+class :: {}
+
+/**
+ * Doc of DemoA (object)
+ * ....
+ * &lt;pre name="code" class="scala">
+ *  val x = DemoA.noArgsReturnString
+ * &lt;/pre>
+ *
+ * @author &lt;a href="ghgjh">au1&lt;/a>
+ * @author au2 (au2@foo.bar)
+ */
+object DemoA {
+  /** description of variable */
+  var variable = "Hello"
+  /** description of value */
+  val value = "World"
+  def noArgsReturnString = "noArg"
+  def noArgsNoReturn {}
+  def zeroArgsReturnString() = "zeroArgs"
+  def zeroArgsNoReturn() = {}
+  /**
+   * method bkjjghkjhg
+   * @param i an integer
+   * @param s a String
+   * @return concatenation of i and s
+   */
+  def twoArgs(i: Int, s: String) = {s.length + i}
+}
+
+/**
+ * Class use to test the scaladoc 2 renderer
+ */
+class DemoA {
+  var variable = "Hello"
+  val value = "World"
+  def noArgsReturnString = "noArg"
+  def noArgsNoReturn {}
+  def zeroArgsReturnString() = "zeroArgs"
+  def zeroArgsNoReturn() = {}
+  /**@codeAsDoc*/
+  def twoArgsAndCodeAsDoc(i: Int, s: String) = {s.length + i}
+}
+
+
+</pre>
+    <script language='javascript'>
+      dp.SyntaxHighlighter.ClipboardSwf = './../../_highlighter/clipboard.swf';
+      dp.SyntaxHighlighter.HighlightAll('code');
+    </script>
+  </body>
+  </html>

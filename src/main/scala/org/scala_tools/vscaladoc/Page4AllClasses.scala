@@ -30,7 +30,7 @@ class Page4AllClasses(env : HtmlPageHelper) extends HtmlPage(env) {
       <h2>Filters</h2>
       <div class="ctrl">
         <select id="packagesFilter" multiple="true" size="6.5">
-          {packagesOption}
+          {packagesOption.toList.sort(_.child(0).first.text < _.child(0).first.text)}
         </select>
         <div id="kindFilters">
           <a id="filter_class" class="class" href="#" title="Class">Class<input type="checkbox" checked="true" id="filter_class_cb"/></a>
