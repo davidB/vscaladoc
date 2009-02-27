@@ -23,10 +23,10 @@ class HtmlRenderer(outputDir: File, env : HtmlPageHelper, fileHelper : FileHelpe
     val allPkgSorted = allPackages.toList.sort(_.name.toLowerCase < _.name.toLowerCase)
 
     log.info("write page for overview")
-    val page4overview = save(outputDir, new Page4Overview(env, allPkgSorted))
+    val page4overview = save(outputDir, new Page4OverviewOnModel(env, allPkgSorted))
 
     log.info("write page for all-classes (list)")
-    val page4allClasses = save(outputDir, new Page4AllClasses(env, allPkgSorted, allClasses))
+    val page4allClasses = save(outputDir, new Page4AllClassesOnModel(env, allPkgSorted, allClasses))
 
     log.info("write index.html")
     save(outputDir, new Page4Index(env, page4allClasses, page4overview))

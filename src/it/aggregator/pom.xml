@@ -1,0 +1,44 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>itest.demo</groupId>
+  <artifactId>vscaladoc-aggregator</artifactId>
+  <version>testing</version>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>2.7.3</version>
+          </dependency>
+          <dependency>
+            <groupId>org.scala-tools</groupId>
+            <artifactId>vscaladoc</artifactId>
+            <version>testing</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <tasks>
+            <property name="plugin_classpath" refid="maven.plugin.classpath"/>
+            <path id="modules.path">
+              <pathelement location="${basedir}/site1"/>
+              <pathelement location="${basedir}/site2"/>
+            </path>
+            <property name="modules_path" refid="modules.path"/>
+
+            <echo message="plugin classpath: ${plugin_classpath}"/>
+            <java classname="org.scala_tools.vscaladoc.Main" classpath="${plugin_classpath}" failonerror="true">
+              <arg line="-d ${basedir}/target/site/scaladocs"/>
+              <arg line="-aggregate ${modules_path}"/>
+            </java>
+          </tasks>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

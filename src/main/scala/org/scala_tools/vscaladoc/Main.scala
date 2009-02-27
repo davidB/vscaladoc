@@ -21,6 +21,7 @@ class VSettings(f: String => Unit) extends doc.Settings(f) {
   val formatHtml = BooleanSetting("-format-html", "Process doc strings as raw HTML (default)")
   val formatMarkdown = BooleanSetting("-format-markdown", "Process doc strings as markdown")
   val formatTextile = BooleanSetting("-format-textile", "Process doc strings as textile")
+  val aggregate = MultiStringSetting("-aggregate", "file", "Aggregate scaladoc dir into a single one")
 }
 
 /** The main class for scaladoc, a frontend for the Scala compiler
@@ -35,8 +36,8 @@ object Main {
   var reporter: ConsoleReporter = _
 
   def error(msg: String) {
-    reporter.error(/*new Position */FakePos("scalac"),
-    msg + "\n  scalac -help  gives more information")
+    reporter.error(/*new Position */FakePos("scalac/vscaladoc"),
+    msg + "\n  -help  gives more information")
   }
 
   def process(args: Array[String]) {
@@ -44,7 +45,7 @@ object Main {
     reporter = new ConsoleReporter(docSettings)
     val command = new CompilerCommand(List.fromArray(args), docSettings, error, false)
     if (command.settings.version.value)
-    reporter.info(null, versionMsg, true)
+      reporter.info(null, versionMsg, true)
     else {
       if (command.settings.target.value == "msil") {
         val libpath = System.getProperty("msil.libpath")
@@ -77,14 +78,19 @@ object Main {
         } else if (command.settings.showPhases.value) {
           reporter.info(null, compiler.phaseDescriptions, true)
         } else {
-          val generator = new DocDriver {
-            lazy val global: compiler.type = compiler
-            lazy val settings = docSettings
+          Services.cfg.setFrom(docSettings)
+          if (!docSettings.aggregate.value.isEmpty) {
+            Aggregator.runOn(docSettings.aggregate.value.flatMap(s => s.split(File.pathSeparatorChar)).map(s => new File(s)))
+          } else {
+            val generator = new DocDriver {
+              lazy val global: compiler.type = compiler
+              lazy val settings = docSettings
+            }
+            generator.init()
+            val run = new compiler.Run
+            run compile command.files
+            generator.process(run.units)
           }
-          generator.init()
-          val run = new compiler.Run
-          run compile command.files
-          generator.process(run.units)
           reporter.printSummary()
         }
       } catch {

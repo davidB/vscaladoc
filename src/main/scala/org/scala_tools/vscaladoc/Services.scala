@@ -23,7 +23,7 @@ object Services {
      */
     object cfg {
       var encodingString = "UTF-8"
-      var versionString = "0.1-SNAPSHOT"
+      var versionString = "1.2"
       var pageHeader: NodeSeq = Text("header")
       var pageFooter: NodeSeq = Text("footer")
       var windowTitle = "API"
@@ -31,8 +31,24 @@ object Services {
       var sourcedir = new File(".")
       var outputdir = new File(".")
       var htmlizeSource = true
-      var format: Format = HtmlFormat
+      var format = "html"
       var global: Global = _ //TODO: try to remove dependency to global
+
+      def setFrom(settings : VSettings) {
+        pageFooter =  DocUtil.load(settings.pagebottom.value)
+        pageHeader =  DocUtil.load(settings.pagetop.value)
+        windowTitle = settings.windowtitle.value
+        overviewTitle = DocUtil.load(settings.doctitle.value) //load
+        sourcedir = new File(settings.sourcepath.value)
+        outputdir = new File(settings.outdir.value)
+        format = if (settings.formatMarkdown.value) {
+          "markdown"
+        } else if (settings.formatTextile.value) {
+          "textile"
+        } else {
+          "html"
+        }
+      }
     }
 
     /** @codeAsDoc */

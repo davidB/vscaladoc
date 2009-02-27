@@ -30,6 +30,11 @@
       <name>Scala-Tools Maven2 Repository</name>
       <url>http://scala-tools.org/repo-releases</url>
     </repository>
+    <repository>
+      <id>repo-embedded</id>
+      <name>project repo</name>
+      <url>file://${basedir}/repo-embedded</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -44,6 +49,42 @@
       <artifactId>scala-compiler</artifactId>
       <version>${scala.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.mylyn.wikitext</groupId>
+      <artifactId>wikitext</artifactId>
+      <version>0.9.4.I20090220-1600-e3x</version>
+      <!--optional>true</optional-->
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.mylyn.wikitext</groupId>
+      <artifactId>wikitext.textile</artifactId>
+      <version>0.9.4.I20090220-1600-e3x</version>
+      <!--optional>true</optional-->
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.mylyn.wikitext</groupId>
+      <artifactId>wikitext.textile</artifactId>
+      <version>0.9.4.I20090220-1600-e3x</version>
+      <!--optional>true</optional-->
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.mylyn.wikitext</groupId>
+      <artifactId>wikitext.confluence</artifactId>
+      <version>0.9.4.I20090220-1600-e3x</version>
+      <!--optional>true</optional-->
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.mylyn.wikitext</groupId>
+      <artifactId>wikitext.mediawiki</artifactId>
+      <version>0.9.4.I20090220-1600-e3x</version>
+      <!--optional>true</optional-->
+    </dependency>
+    <dependency>
+      <groupId>org.markdownj</groupId>
+      <artifactId>markdownj</artifactId>
+      <version>0.3.0-1.0.2b4</version>
+      <!--optional>true</optional-->
     </dependency>
     <dependency>
       <groupId>junit</groupId>

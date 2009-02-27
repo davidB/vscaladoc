@@ -60,78 +60,6 @@ class Page4Index(env : HtmlPageHelper, navFrame: HtmlPage, contentFrame: HtmlPag
 }
 
 
-class Page4AllClasses(env : HtmlPageHelper, allPackages: Iterable[ModelExtractor#Package], allClasses: Iterable[ModelExtractor#ClassOrObject]) extends HtmlPage(env) {
-  val uri = new URI("site:/all-classes.html")
-  override def title = "List of all classes and objects"
-
-  override def header = Some(
-    <xml:group>
-      <link rel="stylesheet" href={relativize("site:/all-classes.css")} type="text/css"/>
-      <script id="all-classes" src={relativize("site:/all-classes.js")}></script>
-    </xml:group>
-  )
-
-  override def body = Some(
-    <body>
-      {filtersBody}
-      {classesBody}
-    </body>
-  )
-
-  //TODO : bind onchange, onclick from js
-  private def filtersBody: NodeSeq = {
-//          <a id="filterAll" href="#" onclick="showAll()" title="All">[A]</a>
-//          <a id="filterNode" href="#" onclick="hideAll()" title="None">[N]</a>
-    <xml:group>
-      <h2>Filters</h2>
-      <div class="ctrl">
-        <select id="packagesFilter" multiple="true" size="6.5">
-          {allPackages.map(pkg => <option>{pkg.name}</option>)}
-        </select>
-        <div id="kindFilters">
-          <a id="filter_class" class="class" href="#" title="Class">Class<input type="checkbox" checked="true" id="filter_class_cb"/></a>
-          <a id="filter_trait" class="trait" href="#" title="Trait">Trait<input type="checkbox" checked="true" id="filter_trait_cb"/></a>
-          <a id="filter_object" class="object" href="#" title="Object">Object<input type="checkbox" checked="true" id="filter_object_cb"/></a>
-        </div>
-        <input id="nameFilter" type="text"/><br/>
-        <a href="#" onclick="$('#userOptions').toggle()">Options</a><br/>
-        <div id="userOptions" style="text-align:left">
-          <a class="btnOption" href="#" onclick="togglefilter4NameOptions('filter4NameIgnoreCase')"><input type="checkbox" checked="false" class="option_filter4NameIgnoreCase_cb"/>Name filter ignore case</a><br/>
-          <a class="btnOption" href="#" onclick="togglefilter4NameOptions('filter4NameAsRegExp')"><input type="checkbox" checked="false" class="option_filter4NameAsRegExp_cb"/>Name filter is reg. exp.</a><br/>
-        </div>
-      </div>
-    </xml:group>
-  }
-
-  // <a href={urlFor(cls)} target={contentFrame} title={cls.fullName('.')}>{cls.name}</a>
-  private def classesBody: NodeSeq = {
-    val namePlusMap = new scala.collection.mutable.HashMap[String, String]()
-    def compare(t1: ModelExtractor#ClassOrObject, t2: ModelExtractor#ClassOrObject) = {
-      if (t1.name.toLowerCase == t2.name.toLowerCase) {
-        val f1 = t1.fullName('.')
-        val f2 = t2.fullName('.')
-        if (f1 != f2) {
-          namePlusMap(f1) = f1.substring(0, f1.length-t1.name.length)
-          namePlusMap(f2) = f2.substring(0, f2.length-t2.name.length)
-          f1.toLowerCase < f2.toLowerCase
-        } else {
-          t1.kind < t2.kind
-        }
-      } else {
-        t1.name.toLowerCase < t2.name.toLowerCase
-      }
-    }
-    val classes = allClasses.toList.sort((t1, t2) => compare(t1,t2))
-    def css(cls: ModelExtractor#ClassOrObject) = cls.kind
-    <xml:group>
-      <h2>Classes</h2>
-      <ul id="classes">
-      {classes.map(cls => <li class={css(cls)} title={css(cls)} package={env.modelHelper.packageFor(cls.sym).get.fullNameString('.')}>{env.linkHelper.link(cls, this.uri, None, Some("contentFrame"))}{namePlusMap.get(cls.fullName('.')).map(" ("+_+")").getOrElse("")}</li>)}
-      </ul>
-    </xml:group>
-  }
-
-}
 
 //TODO manage next and prev (as meta link and navbar)
 /*
@@ -143,7 +71,8 @@ class Page4AllClasses(env : HtmlPageHelper, allPackages: Iterable[ModelExtractor
       <script id="shBrushSql.js" src={relativize("site:/_highlighter/shBrushSql.js")} language='javascript' ></script>
       <script id="shBrushXml.js" src={relativize("site:/_highlighter/shBrushXml.js")} language='javascript' ></script>
 */
-abstract class ContentPage(env : HtmlPageHelper) extends HtmlPage(env){
+abstract
+class ContentPage(env : HtmlPageHelper) extends HtmlPage(env){
    def surroundHeader(nodes: Option[NodeSeq]) = Some(
     <xml:group>
       <link rel="stylesheet" href={relativize("site:/content.css")} type="text/css"/>
@@ -196,47 +125,4 @@ abstract class ContentPage(env : HtmlPageHelper) extends HtmlPage(env){
 
 
 }
-
-class Page4Overview(env : HtmlPageHelper, allPackages: Iterable[ModelExtractor#Package]) extends ContentPage(env) {
-  val uri = new URI("site:/overview.html")
-  override def title = super.title + " : Overview"
-  override def header = surroundHeader(None)
-  override def body = surroundBody(Some(
-    <xml:group>
-      {pageTitle}
-      {overviewComment}
-      {packages}
-    </xml:group>
-  ))
-
-  private def pageTitle: NodeSeq = {<h1>{env.overviewTitle}</h1>}
-
-  /**
-   * workaround because compiler doesn't read overview.html
-   */
-  private def overviewComment: NodeSeq =
-    <div id="overview_desc">
-      {Unparsed(env.markupProcessor.onFile("overview").getOrElse(""))}
-    </div>
-
-  private def packages = {
-    <div id="packages">
-      <h2>Packages</h2>
-      <dl>
-        {allPackages.map(
-          pkg => <xml:group>
-            <dt><a href={"javascript:selectPackage('" +pkg.name + "')"}>{pkg.name}</a></dt>
-            <dd>
-              {env.htmlize(pkg.decodeComment)}
-              { //workaround because compiler doesn't read package.html
-                Unparsed(env.markupProcessor.onFile(pkg.fullName('/') + "/package").getOrElse(""))
-              }
-            </dd>
-          </xml:group>)
-        }
-      </dl>
-    </div>
-  }
-}
-
 

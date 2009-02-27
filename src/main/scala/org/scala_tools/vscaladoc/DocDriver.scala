@@ -25,19 +25,6 @@ abstract class DocDriver extends ModelExtractor {
   val sourcedir   = settings.sourcepath.value
 
   def init() {
-    Services.cfg.pageFooter =  DocUtil.load(settings.pagebottom.value)
-    Services.cfg.pageHeader =  DocUtil.load(settings.pagetop.value)
-    Services.cfg.windowTitle = settings.windowtitle.value
-    Services.cfg.overviewTitle = DocUtil.load(settings.doctitle.value) //load
-    Services.cfg.sourcedir = new File(settings.sourcepath.value)
-    Services.cfg.outputdir = new File(settings.outdir.value)
-    Services.cfg.format = if (settings.formatMarkdown.value) {
-      MarkdownFormat
-    } else if (settings.formatTextile.value) {
-      TextileFormat
-    } else {
-      HtmlFormat
-    }
     Services.cfg.global = global
 
     val dir = new File(outdir)
