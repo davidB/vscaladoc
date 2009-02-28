@@ -17,11 +17,13 @@ object Aggregator {
     }
 
     //merge overview.html
+    //TODO extract h1 and dl in one pass
     val packagesDl = srcList.foldLeft[NodeSeq](NodeSeq.Empty){ (back, current) =>
       val f = new File(current, "overview.html")
       if (f.exists) {
         val root = XML.loadFile(f)
-        back ++ root\"body"\"div"\"dl"
+        val subtitle = (root\"body"\"h1").text
+        back ++ <h3>{subtitle}</h3> ++ root\"body"\"div"\"dl"
       } else {
         back
       }
