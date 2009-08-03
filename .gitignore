@@ -8,3 +8,6 @@ build.log
 .project
 .classpath
 .manager
+
+TAGS
+project

@@ -96,7 +96,7 @@ class Page4AllClassesOnXml(env : HtmlPageHelper, val packagesOption : NodeSeq, v
 class Page4AllClassesOnModel(env : HtmlPageHelper, allPackages: Iterable[ModelExtractor#Package], allClasses: Iterable[ModelExtractor#ClassOrObject]) extends Page4AllClasses(env) {
   protected
   def packagesOption = {
-    <xml:group>{allPackages.map(pkg => <option>{pkg.name}</option>)}</xml:group>
+    <xml:group>{allPackages.map(pkg => <option value="{pkg.name}">{pkg.name}</option>)}</xml:group>
   }
 
   protected

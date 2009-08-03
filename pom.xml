@@ -21,7 +21,7 @@
   </ciManagement>
 
   <properties>
-    <scala.version>2.7.3</scala.version>
+    <scala.version>2.7.5</scala.version>
   </properties>
 
   <repositories>
@@ -36,6 +36,13 @@
       <url>file://${basedir}/repo-embedded</url>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>twdata-m2-repository</id>
+      <name>twdata.org Maven 2 Repository</name>
+      <url>http://twdata-m2-repository.googlecode.com/svn/</url>
+    </pluginRepository>
+  </pluginRepositories>
 
   <dependencies>
     <dependency>
@@ -101,6 +108,7 @@
       <plugin>
         <groupId>org.scala-tools</groupId>
         <artifactId>maven-scala-plugin</artifactId>
+        <version>2.11</version>
         <executions>
           <execution>
             <id>compile</id>
@@ -110,11 +118,6 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <args>
-            <arg>-target:jvm-1.5</arg>
-          </args>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>net.sf.alchim</groupId>
@@ -177,6 +180,28 @@
           </aggregations>
         </configuration>
       </plugin>
+            <plugin>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <version>1.3</version>
+                <configuration>
+                    <debug>false</debug>
+                    <showErrors>true</showErrors>
+                    <projectsDirectory>src/it</projectsDirectory>
+                    <pomIncludes>  <pomInclude>**/pom.xml</pomInclude></pomIncludes>
+                    <pomExcludes>  <pomExclude>**/m*/pom.xml</pomExclude></pomExcludes>
+                    <preBuildHookScript>setup.groovy</preBuildHookScript>
+                    <postBuildHookScript>validate.groovy</postBuildHookScript>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>install</goal>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
     </plugins>
   </build>
   <reporting>
@@ -190,7 +215,7 @@
       </plugin>
     </plugins>
   </reporting>
-
+<!--
   <profiles>
     <profile>
       <id>super-helpful-integration-tests</id>
@@ -222,4 +247,5 @@
       </build>
     </profile>
   </profiles>
+-->
 </project>

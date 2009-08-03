@@ -32,10 +32,10 @@ class ModelHelper {
     try {
       if ((sym.isPackage) || (sym.isModuleClass)) {
         Some(sym)
-      //} else if (sym != Symbols.NoSymbol) {
-      //  null
       } else if (sym.owner != null) {
         packageFor(sym.owner)
+      //} else if (sym != Symbols.NoSymbol) {
+      //  null
       } else {
         None
       }

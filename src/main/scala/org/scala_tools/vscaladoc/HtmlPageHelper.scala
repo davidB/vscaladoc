@@ -24,6 +24,8 @@ class HtmlPageHelper(val linkHelper : LinkHelper, val markupProcessor : Htmlizer
         NodeSeq.Empty
       } else {
        var last = ""
+       // TODO use a logical order instead of alphabetical
+       // TODO allow plug of special tag
        <dl>{c.attributes.sort(_.tag < _.tag).filter(_.body.trim.length > 0).map(attr => <xml:group>
          {
            if (last != attr.tag) {
@@ -33,7 +35,14 @@ class HtmlPageHelper(val linkHelper : LinkHelper, val markupProcessor : Htmlizer
              NodeSeq.Empty
            }
          }
-          <dd><code>{attr.option}</code> - {Unparsed(markupProcessor(attr.body))}</dd>
+         <dd><code>{attr.option}</code> - { 
+           if (attr.tag ==  "see") {
+             //TODO create link for @see tag
+             Unparsed(markupProcessor(attr.body))
+           } else {
+             Unparsed(markupProcessor(attr.body))
+           }
+         }</dd>
           </xml:group>)
         }</dl>
       }

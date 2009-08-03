@@ -137,13 +137,14 @@ class Page4ClassOrObject(env : HtmlPageHelper, cls: ModelExtractor#ClassOrObject
 //"sym :" + entity.sym + "|flagsString:" + entity.flagsString + "|kind:" + entity.kind + "|resultType:" + entity.resultType
   //TODO: manage deprecated
   //TODO: manage override
+  //TODO : add html anchor
   def asXmlField(member: Member) = {
     val entity = member.entity
     val isDeprecated = if ((entity.sym.isDeprecated) || (entity.decodeComment.map(_.attributes.exists(_.tag.toLowerCase == "deprecated")).getOrElse(false))) " isDeprecated" else ""
     val isInherited = member.inheritedFrom.map(v => "isInherited").getOrElse("")
     <tr class={isInherited + isDeprecated}>
       <td class="name">
-        <b>{entity.name}</b>
+        <b>{entity.name}</b>..{anchorFor(entity)}
       </td>
       <td class="signature">
         {signatureFor(entity)}
@@ -164,9 +165,15 @@ class Page4ClassOrObject(env : HtmlPageHelper, cls: ModelExtractor#ClassOrObject
       case _ => NodeSeq.Empty
     }
   }
+
   private def printIf(what: Option[Types#Type], before: String, after: String): NodeSeq =
     if (what.isEmpty) NodeSeq.Empty
     else Text(before) ++ link(what.get) ++ Text(after)
+
+  def anchorFor(entity: ModelExtractor#Entity): NodeSeq = {
+    val argsType = entity.valueParams.flatMap(_.map(_.resultType.get.typeSymbol.fullNameString('.')))
+    <a name={env.linkHelper.anchorFor(entity.name, argsType : _*)}/>
+  }
 
   def signatureFor(entity: ModelExtractor#Entity): NodeSeq = {
     <code class="signature">{

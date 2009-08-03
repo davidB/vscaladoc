@@ -43,7 +43,7 @@
         <groupId>org.scala-tools</groupId>
         <artifactId>maven-scala-plugin</artifactId>
         <configuration>
-          <vscaladocVersion>testing</vscaladocVersion>
+          <vscaladocVersion>@project.version@</vscaladocVersion>
         </configuration>
       </plugin>
     </plugins>

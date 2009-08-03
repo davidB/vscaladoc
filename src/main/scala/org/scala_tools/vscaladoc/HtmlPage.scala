@@ -25,7 +25,7 @@ class HtmlPage(env : HtmlPageHelper) {
   def relativize(that: String) : String = relativize(new URI(that))
 
   val dtype = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"
-  val header0 =
+  def header0 =
     <xml:group>
       <title>{Text(title)}</title>
       <meta http-equiv="content-type" content={"text/html; charset=" + env.encodingString}/>
