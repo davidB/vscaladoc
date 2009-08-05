@@ -28,9 +28,9 @@ abstract class DocDriver extends ModelExtractor {
     Services.cfg.global = global
 
     val dir = new File(outdir)
-    //System.out.println("delete :" + dir)
-    Services.fileHelper.deleteDirectory(dir)
-    dir.mkdirs()
+    if (!dir.exists) {
+      dir.mkdirs()
+    }
   }
 
   //import global._
