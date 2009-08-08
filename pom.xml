@@ -4,17 +4,13 @@
   <parent>
     <groupId>org.scala-tools</groupId>
     <artifactId>scala-tools-parent</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
   </parent>
   <artifactId>vscaladoc</artifactId>
   <version>1.2-SNAPSHOT</version>
   <name>${project.artifactId}</name>
   <inceptionYear>2009</inceptionYear>
 
-  <issueManagement>
-    <system>code.google</system>
-    <url>http://code.google.com/p/vscaladoc/issues/list</url>
-  </issueManagement>
   <ciManagement>
     <system>hudson</system>
     <url>http://scala-tools.org/hudson/job/vscaladoc</url>
