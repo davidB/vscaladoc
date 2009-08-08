@@ -8,7 +8,18 @@ object Aggregator {
   import java.io.File
   import scala.xml.{XML, NodeSeq}
 
+  // val myXML = {
+  //   val f = javax.xml.parsers.SAXParserFactory.newInstance()
+  //   f.setNamespaceAware(false)
+  //   f.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+  //   XML.withSAXParser(f.newSAXParser())
+  // }
+
   def runOn(srcList : List[File]) {
+    System.setProperty("javax.xml.parsers.SAXParserFactory", classOf[MyXMLParserFactory].getName)
+    println("sax factory", System.getProperty("javax.xml.parsers.SAXParserFactory"))
+    val xp =  javax.xml.parsers.SAXParserFactory.newInstance()
+    println("sax paser f", xp.getClass(), xp.isValidating, xp.isNamespaceAware, xp.getFeature("http://xml.org/sax/features/validation"))
     val dest = Services.cfg.outputdir
 
     //copy existing content
@@ -23,7 +34,7 @@ object Aggregator {
       if (f.exists) {
         val root = XML.loadFile(f)
         val subtitle = (root\"body"\"h1").text
-        back ++ <h3>{subtitle}</h3> ++ root\"body"\"div"\"dl"
+        back ++ <h3>{subtitle}</h3> ++ (root \ "body" \ "div" \ "dl")
       } else {
         back
       }
@@ -31,12 +42,14 @@ object Aggregator {
     //XML.save(new File(dest, "overview.html").getCanonicalPath, <html><body>{overviewXml}</body></html>)
     //log.info("write page for overview")
     Services.htmlRenderer.save(dest, new Page4OverviewOnXml(Services.htmlPageHelper, packagesDl))
+
     //TODO extract option and li in one pass
     val (packagesOption, classesLi) = srcList.foldLeft[Tuple2[NodeSeq, NodeSeq]]((NodeSeq.Empty, NodeSeq.Empty)){ (back, current) =>
       val f = new File(current, "all-classes.html")
+println("process", f, f.exists)
       if (f.exists) {
         val root = XML.loadFile(new File(current, "all-classes.html"))
-        (back._1 ++ root\"body"\\"option", back._2 ++ root\"body"\\"li")
+        (back._1 ++ (root \ "body" \\ "option"), back._2 ++ (root \ "body" \\ "li") )
       } else {
         back
       }
@@ -44,6 +57,23 @@ object Aggregator {
     Services.htmlRenderer.save(dest, new Page4AllClassesOnXml(Services.htmlPageHelper, packagesOption, classesLi))
 
   }
+}
+
+//import javax.xml.parsers.SAXParserFactory
+//import org.apache.xerces.jaxp.SAXParserFactoryImpl
+import com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl
+class MyXMLParserFactory extends SAXParserFactoryImpl {
+  setNamespaceAware(false)
+  setXIncludeAware(false)
+  setValidating(false)
+  setSchema(null)
+  setFeature("http://xml.org/sax/features/validation", false)
+  setFeature("http://xml.org/sax/features/external-general-entities", false)
+  setFeature("http://xml.org/sax/features/external-parameter-entities", false)
+  setFeature("http://xml.org/sax/features/namespaces", false)
+  setFeature("http://apache.org/xml/features/validation/schema", false)
+  setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false)
+  setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
 }
 
 object IOUtils {

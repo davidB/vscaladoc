@@ -28,6 +28,7 @@ trait ModelExtractor extends OrigModelExtractor {
 
   // override original code to support more tags
   import java.util.regex.Pattern
+
   // patterns for standard tags with 1 and 2 arguments
   protected
   val pat1 = Pattern.compile("[ \t]*@(author|deprecated|pre|return|see|since|todo|version|ex|note|codeAsDoc)[ \t]*(.*)")

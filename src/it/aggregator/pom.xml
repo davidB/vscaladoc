@@ -19,7 +19,7 @@
           <dependency>
             <groupId>org.scala-tools</groupId>
             <artifactId>vscaladoc</artifactId>
-            <version>testing</version>
+            <version>@project.version@</version>
           </dependency>
         </dependencies>
         <configuration>

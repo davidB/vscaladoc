@@ -93,6 +93,49 @@ class LinkHelper(siteDir: File, fh: FileHelper, val global: Global) {
 
 //  private def uriFor(sym: Types#Symbol): Option[URI] = uriFor(sym.asInstanceOf[Symbols#Symbol])
 
+  def uriForPackage(packageName : String) : Option[URI] = {
+    findBaseURI(packageName).map {
+      baseUri => baseUri.resolve("overview.html#" + packageName)
+    }
+  }
+
+  def uriForType(packageName : String , typeName : String, isObject : Boolean) : Option[URI] = {
+    val baseFileName = URLEncoder.encode(typeName, "UTF-8")
+    val fileName = isObject match {
+      case true => baseFileName + "$object.html"
+      case false => baseFileName + ".html"
+    }
+    var packagePath = packageName.replace('.', '/')
+    if (packagePath.length > 0) {
+      packagePath = packagePath + "/"
+    }
+    findBaseURI(packageName) match {
+      case Some(baseUri) => Some(baseUri.resolve(packagePath + fileName))
+      case None => {
+        println("failed to find baseUri for (" + packageName + ", "+ typeName + ", " + isObject)
+        None
+      }
+    }
+  }
+
+  def uriForMember(packageName : String , typeName : String, isObject : Boolean, memberName : String, argsType : String*) : Option[URI] = {
+     uriForMember(uriForType(packageName, typeName, isObject), memberName, argsType : _*)
+  }
+
+  def uriForMember(ownerUri : Option[URI], memberName : String, argsType : String*) : Option[URI] = {
+    ownerUri map {
+      uri =>  new URI(uri.getScheme, uri.getSchemeSpecificPart, anchorFor(memberName, argsType : _*))
+    }
+  }
+
+  def anchorFor(memberName : String, argsType : String*) : String = {
+    if (argsType.length == 0) {
+      memberName
+    } else {
+      memberName + argsType.mkString("(", ",", ")")
+    }
+  }
+
   private def uriFor(sym: Symbols#Symbol): Option[URI] = {
     if (sym == null) return None
     //Some(new URI("api", entity.fullName('.') + "/" + entity.listName, entity.name))
@@ -107,30 +150,14 @@ class LinkHelper(siteDir: File, fh: FileHelper, val global: Global) {
     */
     val scheme = "site"
     if (sym.isPackage || sym.isModuleClass) {
-      Some(new URI(scheme, "/overview.html", sym.fullNameString('.')))
+      uriForPackage(sym.fullNameString('.'))
     } else if (sym.isModule || sym.isClass || sym.isType || sym.isTrait) {
-      val pkg = Services.modelHelper.packageFor(sym)
-      //println("find package " +  pkg.map(_.fullNameString('.')))
-      var pkgPath = ""
-      var fileName = sym.fullNameString('.')
-      if ((!pkg.isEmpty) && (pkg.get != sym)) {
-        fileName = fileName.substring(pkg.get.fullNameString('.').length + 1)
-        pkgPath = pkgPath + pkg.get.fullNameString('/')
-        //println("use package :" + pkgPath + " :: " + fileName)
-      }
-      fileName = URLEncoder.encode(fileName, "UTF-8")
-      findBaseURI(pkg.get.fullNameString('.')) match {
-        case Some(baseUri) => {
-          if (sym.isModule) {
-            Some(baseUri.resolve(pkgPath + "/" + fileName + "$object.html"))
-          } else {
-            Some(baseUri.resolve(pkgPath + "/" + fileName + ".html"))
-          }
-        }
-        case None => println("failed to find baseUri for " + sym.fullNameString('.') + " :: "+ pkg.get.fullNameString('.')); None
-      }
+      val pkgName = Services.modelHelper.packageFor(sym).map(_.fullNameString('.')).getOrElse("")
+      val pkgPartLg = if (pkgName.length == 0) 0 else pkgName.length + 1
+      val typeName = sym.fullNameString('.').substring(pkgPartLg)
+      uriForType(pkgName, typeName, sym.isModule)
     } else if (sym.isMethod || sym.isValue || sym.isVariable) {
-      uriFor(sym.owner).map(uri => new URI(uri.getScheme, uri.getSchemeSpecificPart, sym.nameString))
+      uriForMember(uriFor(sym.owner), sym.nameString)
     } else {
       println("failed to find uri for " + sym);
       //Thread.dumpStack()
