@@ -1,13 +1,24 @@
 .svn
+
+# ignore maven
 dist
 target
 build.log
 
-#ignore eclipse
+# ignore eclipse
 .settings
 .project
 .classpath
 .manager
 
+# ignore sbt
+target
+lib_managed
+project/boot
+project/build/target
+project/plugins/target
+project/plugins/lib_managed
+project/plugins/src_managed
+
+# ignore ctags/etags
 TAGS
-project

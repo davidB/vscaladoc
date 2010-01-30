@@ -27,12 +27,22 @@
       <url>http://scala-tools.org/repo-releases</url>
     </repository>
     <repository>
+      <id>oss.sonatype.org/github-releases</id>
+      <url>http://oss.sonatype.org/content/repositories/github-releases/</url>
+    </repository>
+<!--
+    <repository>
       <id>repo-embedded</id>
       <name>project repo</name>
       <url>file://${basedir}/repo-embedded</url>
     </repository>
+-->
   </repositories>
   <pluginRepositories>
+    <pluginRepository>
+      <id>oss.sonatype.org/github-releases</id>
+      <url>http://oss.sonatype.org/content/repositories/github-releases/</url>
+    </pluginRepository>
     <pluginRepository>
       <id>twdata-m2-repository</id>
       <name>twdata.org Maven 2 Repository</name>
@@ -116,8 +126,9 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>net.sf.alchim</groupId>
-        <artifactId>yuicompressor-maven-plugin</artifactId>
+        <groupId>net.alchim31.maven</groupId> 
+        <artifactId>yuicompressor-maven-plugin</artifactId> 
+        <version>0.9</version>
         <executions>
           <execution>
             <goals>
