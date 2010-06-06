@@ -22,3 +22,4 @@ project/plugins/src_managed
 
 # ignore ctags/etags
 TAGS
+/project/build.properties
